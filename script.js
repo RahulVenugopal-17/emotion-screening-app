@@ -5,68 +5,36 @@ const factText = document.getElementById("fact");
 
 let model;
 
-/* ---------- PAGE SWITCH ---------- */
-function showPage(num) {
+// PAGE NAVIGATION
+function showPage(n) {
   pages.forEach(p => p.classList.remove("active"));
-  document.getElementById(`page${num}`).classList.add("active");
-
-  if (num === 3) {
-    const name = sessionStorage.getItem("username");
-    document.getElementById("greeting").innerText = `Hello ${name} 👋`;
-  }
+  document.getElementById(`page${n}`).classList.add("active");
 }
 
-/* ---------- LOGIN / SIGNUP ---------- */
-async function saveUser() {
-  const name = nameVal();
-  const email = emailVal();
-  const password = passwordVal();
-
-  if (!name || !email || !password) {
-    alert("Fill all required fields");
+// NAME → EMOTION PAGE
+function goToEmotion() {
+  const name = document.getElementById("name").value.trim();
+  if (!name) {
+    alert("Please enter your name");
     return;
   }
-
-  sessionStorage.setItem("username", name);
-
-  try {
-    let { error } = await supabaseClient.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (error) {
-      const res = await supabaseClient.auth.signUp({ email, password });
-      if (res.error) {
-        alert(res.error.message);
-        return;
-      }
-    }
-
-    showPage(2);
-  } catch (e) {
-    alert("Auth error: " + e.message);
-  }
+  document.getElementById("greeting").innerText = `Hello ${name} 👋`;
+  showPage(3);
 }
 
-/* ---------- INPUT HELPERS ---------- */
-const nameVal = () => document.getElementById("name").value;
-const emailVal = () => document.getElementById("email").value;
-const passwordVal = () => document.getElementById("password").value;
-
-/* ---------- CAMERA ---------- */
+// CAMERA
 document.getElementById("startBtn").onclick = async () => {
   const stream = await navigator.mediaDevices.getUserMedia({ video: true });
   video.srcObject = stream;
 };
 
-/* ---------- LOAD MODEL ---------- */
+// LOAD MODEL
 async function loadModel() {
   model = await tf.loadLayersModel("./model/model.json");
 }
 loadModel();
 
-/* ---------- PREPROCESS ---------- */
+// PREPROCESS
 const canvas = document.createElement("canvas");
 canvas.width = 48;
 canvas.height = 48;
@@ -82,7 +50,7 @@ function captureFrame() {
     .expandDims(-1);
 }
 
-/* ---------- EMOTIONS ---------- */
+// EMOTIONS
 const emotions = [
   { name: "Angry", emoji: "😠" },
   { name: "Disgust", emoji: "🤢" },
@@ -93,57 +61,44 @@ const emotions = [
   { name: "Neutral", emoji: "😐" }
 ];
 
-/* ---------- FACTS ---------- */
+// FACTS
 const emotionFacts = {
-  Happy: ["Positive emotions support social bonding."],
-  Sad: ["Sadness may indicate overload."],
-  Fear: ["Fear relates to sensory sensitivity."],
-  Angry: ["Anger may reflect frustration."],
-  Neutral: ["Neutral does not mean no emotion."],
-  Surprise: ["Unexpected stimuli trigger surprise."],
-  Disgust: ["Sensory discomfort can cause disgust."]
+  Happy: ["Positive emotions support social engagement."],
+  Sad: ["Emotional support helps regulate sadness."],
+  Fear: ["Calm environments reduce anxiety."],
+  Angry: ["Anger may result from communication difficulty."],
+  Neutral: ["Neutral does not mean lack of emotion."],
+  Surprise: ["Predictable routines improve comfort."],
+  Disgust: ["Sensory sensitivity may trigger discomfort."]
 };
 
-/* ---------- TEMPORAL AVERAGING ---------- */
-document.getElementById("analyzeBtn").onclick = analyzeEmotion;
-
-async function analyzeEmotion() {
-  resultText.innerText = "Analyzing...";
-  const indices = [];
-  const start = Date.now();
-
-  while (Date.now() - start < 2000) {
-    indices.push(await predictSingleFrame());
-    await sleep(200);
+// DOUBLE-VERIFIED ANALYSIS
+document.getElementById("analyzeBtn").onclick = async () => {
+  if (!model) {
+    alert("Model not loaded");
+    return;
   }
 
-  const idx = dominant(indices);
+  resultText.innerText = "Analyzing...";
+  factText.innerText = "";
+
+  const frames = 10;
+  const delay = 100;
+  let totals = new Array(emotions.length).fill(0);
+
+  for (let i = 0; i < frames; i++) {
+    const img = captureFrame();
+    const pred = model.predict(img);
+    const data = await pred.data();
+
+    data.forEach((v, j) => totals[j] += v);
+    await new Promise(r => setTimeout(r, delay));
+  }
+
+  const avg = totals.map(v => v / frames);
+  const idx = avg.indexOf(Math.max(...avg));
   const emotion = emotions[idx];
 
-  resultText.innerText =
-    `Detected Emotion: ${emotion.name} ${emotion.emoji}`;
-
-  factText.innerText =
-    emotionFacts[emotion.name][0];
-
-  await supabaseClient.from("emotion_history").insert({
-    emotion: emotion.name
-  });
-}
-
-/* ---------- PREDICTION ---------- */
-async function predictSingleFrame() {
-  const img = captureFrame();
-  const prediction = model.predict(img);
-  const data = await prediction.data();
-  return data.indexOf(Math.max(...data));
-}
-
-/* ---------- HELPERS ---------- */
-function dominant(list) {
-  const map = {};
-  list.forEach(i => map[i] = (map[i] || 0) + 1);
-  return Object.keys(map).reduce((a, b) => map[a] > map[b] ? a : b);
-}
-
-const sleep = ms => new Promise(r => setTimeout(r, ms));
+  resultText.innerText = `Detected Emotion: ${emotion.name} ${emotion.emoji}`;
+  factText.innerText = emotionFacts[emotion.name][0];
+};
