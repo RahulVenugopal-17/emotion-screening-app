@@ -7,80 +7,118 @@
   <!-- TensorFlow.js -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.16.0/dist/tf.min.js"></script>
 
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f4c5c, #1b9aaa);
+      color: #0a2540;
+    }
+
+    .page {
+      display: none;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .active {
+      display: flex;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 18px;
+      width: 90%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      background: #0f766e;
+      color: white;
+      border: none;
+      padding: 14px;
+      width: 100%;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    .option {
+      background: #f0f9ff;
+      padding: 18px;
+      border-radius: 14px;
+      margin: 12px 0;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    video {
+      width: 100%;
+      border-radius: 14px;
+      border: 2px solid #0f766e;
+    }
+
+    h2 { margin-bottom: 10px; }
+    p { font-size: 14px; }
+  </style>
 </head>
+
 <body>
 
-<!-- PAGE 1 : NAME -->
+<!-- PAGE 1 -->
 <div id="page1" class="page active">
   <div class="card">
     <h2>👋 Welcome</h2>
     <input id="name" placeholder="Enter your name">
-    <button onclick="saveName()">Continue</button>
+
+    <div class="option" onclick="goToEmotion()">🎥 Emotion Recognition</div>
+    <div class="option" onclick="showPage(2)">📘 About Neurodevelopmental Disorders</div>
   </div>
 </div>
 
-<!-- PAGE 2 : OPTIONS -->
+<!-- PAGE 2 -->
 <div id="page2" class="page">
-  <div class="card">
-    <h2>Hello <span id="userName"></span> 👋</h2>
-
-    <div class="option" onclick="showPage(3)">
-      🎥 Emotion Recognition
-    </div>
-
-    <div class="option" onclick="showPage(4)">
-      ℹ️ Information
-    </div>
-  </div>
-</div>
-
-<!-- PAGE 3 : CAMERA -->
-<div id="page3" class="page">
-  <div class="card">
-    <h2>Emotion Recognition</h2>
-
-    <button id="startBtn">📸 Start Camera</button><br><br>
-    <video id="video" autoplay playsinline></video><br><br>
-    <button id="analyzeBtn">✨ Analyze Emotion</button>
-
-    <p id="result">Waiting...</p>
-    <p id="fact"></p>
-
-    <button onclick="showPage(2)">⬅ Back</button>
-  </div>
-</div>
-
-<!-- PAGE 4 : INFORMATION -->
-<div id="page4" class="page">
   <div class="card">
     <h2>🧠 Information</h2>
 
-    <h3>Autism Spectrum Disorder (ASD)</h3>
-    <p>
-      Autism is a neurodevelopmental condition that affects communication,
-      emotional expression, and social interaction.
-    </p>
+    <p><b>Autism Spectrum Disorder:</b> Affects communication, emotional expression, and social interaction.</p>
+    <p><b>Social Communication Disorder:</b> Difficulty using verbal and non-verbal communication.</p>
+    <p><b>ADHD:</b> Impacts attention, impulsivity, and emotional regulation.</p>
+    <p><b>Sensory Processing Disorder:</b> Over- or under-sensitivity to sensory input.</p>
 
-    <h3>Social Communication Disorder</h3>
-    <p>
-      This condition affects verbal and non-verbal communication skills,
-      especially in social situations.
-    </p>
+    <button onclick="showPage(1)">⬅ Back</button>
+  </div>
+</div>
 
-    <h3>Attention Deficit Hyperactivity Disorder (ADHD)</h3>
-    <p>
-      ADHD affects attention, impulse control, and emotional regulation,
-      often overlapping with autism traits.
-    </p>
+<!-- PAGE 3 -->
+<div id="page3" class="page">
+  <div class="card">
+    <h2 id="greeting"></h2>
 
-    <h3>Sensory Processing Disorder</h3>
-    <p>
-      Individuals may be overly sensitive or under-responsive to sensory input
-      such as sound, light, or touch.
-    </p>
+    <button id="startBtn">📸 Start Camera</button>
+    <br><br>
 
-    <button onclick="showPage(2)">⬅ Back</button>
+    <video id="video" autoplay playsinline></video>
+    <br><br>
+
+    <button id="analyzeBtn">✨ Analyze Emotion</button>
+
+    <p id="result">Waiting for analysis...</p>
+    <p id="fact"></p>
   </div>
 </div>
 
