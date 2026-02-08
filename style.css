@@ -1,0 +1,74 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(135deg, #0a1f44, #1abc9c);
+}
+
+.page {
+  display: none;
+  padding: 20px;
+}
+
+.page.active {
+  display: block;
+}
+
+.card {
+  background: white;
+  max-width: 420px;
+  margin: 40px auto;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  color: #0a1f44;
+  text-align: center;
+}
+
+input {
+  width: 90%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+button {
+  background: linear-gradient(135deg, #0a1f44, #1abc9c);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+video {
+  width: 100%;
+  max-width: 320px;
+  border-radius: 15px;
+  border: 3px solid #1abc9c;
+}
+
+#result {
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+#fact {
+  margin-top: 10px;
+  font-style: italic;
+  color: #333;
+}
+
+.note {
+  font-size: 12px;
+  color: gray;
+}
+

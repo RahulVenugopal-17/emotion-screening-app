@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Emotion Screening App</title>
+
+  <!-- TensorFlow.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.16.0/dist/tf.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- PAGE 1 : USER DETAILS -->
+  <div id="page1" class="page active">
+    <div class="card">
+      <h2>👋 Welcome</h2>
+
+      <input id="name" placeholder="Name">
+      <input id="email" placeholder="Email">
+      <input id="phone" placeholder="Phone Number">
+      <input id="password" type="password" placeholder="Password">
+
+      <button onclick="saveUser()">Continue</button>
+      <p class="note">Details are stored locally on this device.</p>
+    </div>
+  </div>
+
+  <!-- PAGE 2 : INFORMATION -->
+  <div id="page2" class="page">
+    <div class="card">
+      <h2>🧠 Understanding Neurodevelopmental Conditions</h2>
+
+      <h3>Autism Spectrum Disorder (ASD)</h3>
+      <p>
+        Autism is a neurodevelopmental condition affecting communication,
+        emotional expression, and social interaction.
+      </p>
+
+      <h3>Communication Disorders</h3>
+      <p>
+        These disorders affect speech, language understanding, and expression.
+      </p>
+
+      <h3>Related Conditions</h3>
+      <p>
+        ADHD, Social Anxiety Disorder, Sensory Processing Disorder and others
+        may share overlapping characteristics.
+      </p>
+
+      <button onclick="showPage(3)">📷 Open Camera</button>
+    </div>
+  </div>
+
+  <!-- PAGE 3 : CAMERA & RESULT -->
+  <div id="page3" class="page">
+    <div class="card">
+      <h2 id="greeting"></h2>
+
+      <button id="startBtn">📸 Start Camera</button>
+      <br><br>
+
+      <video id="video" autoplay playsinline></video>
+      <br><br>
+
+      <button id="analyzeBtn">✨ Analyze Emotion</button>
+
+      <p id="result">Waiting for analysis...</p>
+      <p id="fact"></p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
