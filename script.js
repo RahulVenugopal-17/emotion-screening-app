@@ -1,104 +1,103 @@
 const pages = document.querySelectorAll(".page");
 const video = document.getElementById("video");
 const resultText = document.getElementById("result");
-const factText = document.getElementById("fact");
+const confidenceText = document.getElementById("confidence");
+const historyList = document.getElementById("history");
 
 let model;
 
-// PAGE NAVIGATION
+// ---------- NAV ----------
 function showPage(n) {
   pages.forEach(p => p.classList.remove("active"));
   document.getElementById(`page${n}`).classList.add("active");
 }
 
-// NAME → EMOTION PAGE
-function goToEmotion() {
-  const name = document.getElementById("name").value.trim();
-  if (!name) {
-    alert("Please enter your name");
-    return;
-  }
-  document.getElementById("greeting").innerText = `Hello ${name} 👋`;
-  showPage(3);
-}
+// ---------- DARK MODE ----------
+document.getElementById("darkToggle").onclick = () => {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("dark", document.body.classList.contains("dark"));
+};
+if (localStorage.getItem("dark") === "true") document.body.classList.add("dark");
 
-// CAMERA
-document.getElementById("startBtn").onclick = async () => {
-  const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-  video.srcObject = stream;
+// ---------- BUTTON BINDINGS ----------
+document.getElementById("emotionBox").onclick = () => {
+  const name = document.getElementById("nameInput").value.trim();
+  if (!name) return alert("Enter your name");
+  localStorage.setItem("username", name);
+  document.getElementById("greeting").innerText = `Hello ${name} 👋`;
+  loadHistory();
+  showPage(3);
 };
 
-// LOAD MODEL
+document.getElementById("infoBox").onclick = () => showPage(2);
+document.getElementById("backFromInfo").onclick = () => showPage(1);
+document.getElementById("backFromCam").onclick = () => showPage(1);
+
+// ---------- CAMERA ----------
+document.getElementById("startCam").onclick = async () => {
+  video.srcObject = await navigator.mediaDevices.getUserMedia({ video: true });
+};
+
+// ---------- MODEL ----------
 async function loadModel() {
   model = await tf.loadLayersModel("./model/model.json");
 }
 loadModel();
 
-// PREPROCESS
+// ---------- PREPROCESS ----------
 const canvas = document.createElement("canvas");
-canvas.width = 48;
-canvas.height = 48;
+canvas.width = 48; canvas.height = 48;
 const ctx = canvas.getContext("2d");
 
 function captureFrame() {
   ctx.drawImage(video, 0, 0, 48, 48);
   return tf.browser.fromPixels(canvas)
-    .mean(2)
-    .toFloat()
-    .div(255)
-    .expandDims(0)
-    .expandDims(-1);
+    .mean(2).toFloat().div(255)
+    .expandDims(0).expandDims(-1);
 }
 
-// EMOTIONS
-const emotions = [
-  { name: "Angry", emoji: "😠" },
-  { name: "Disgust", emoji: "🤢" },
-  { name: "Fear", emoji: "😨" },
-  { name: "Happy", emoji: "😊" },
-  { name: "Sad", emoji: "😢" },
-  { name: "Surprise", emoji: "😲" },
-  { name: "Neutral", emoji: "😐" }
-];
+// ---------- EMOTIONS ----------
+const emotions = ["Angry","Disgust","Fear","Happy","Sad","Surprise","Neutral"];
 
-// FACTS
-const emotionFacts = {
-  Happy: ["Positive emotions support social engagement."],
-  Sad: ["Emotional support helps regulate sadness."],
-  Fear: ["Calm environments reduce anxiety."],
-  Angry: ["Anger may result from communication difficulty."],
-  Neutral: ["Neutral does not mean lack of emotion."],
-  Surprise: ["Predictable routines improve comfort."],
-  Disgust: ["Sensory sensitivity may trigger discomfort."]
-};
-
-// DOUBLE-VERIFIED ANALYSIS
-document.getElementById("analyzeBtn").onclick = async () => {
-  if (!model) {
-    alert("Model not loaded");
-    return;
-  }
-
+// ---------- ANALYSIS (DOUBLE VERIFY) ----------
+document.getElementById("analyze").onclick = async () => {
   resultText.innerText = "Analyzing...";
-  factText.innerText = "";
+  let totals = new Array(7).fill(0);
 
-  const frames = 10;
-  const delay = 100;
-  let totals = new Array(emotions.length).fill(0);
-
-  for (let i = 0; i < frames; i++) {
-    const img = captureFrame();
-    const pred = model.predict(img);
+  for (let i = 0; i < 10; i++) {
+    const pred = model.predict(captureFrame());
     const data = await pred.data();
-
     data.forEach((v, j) => totals[j] += v);
-    await new Promise(r => setTimeout(r, delay));
+    await new Promise(r => setTimeout(r, 100));
   }
 
-  const avg = totals.map(v => v / frames);
-  const idx = avg.indexOf(Math.max(...avg));
-  const emotion = emotions[idx];
+  const avg = totals.map(v => v / 10);
+  const max = Math.max(...avg);
+  const idx = avg.indexOf(max);
 
-  resultText.innerText = `Detected Emotion: ${emotion.name} ${emotion.emoji}`;
-  factText.innerText = emotionFacts[emotion.name][0];
+  const emotion = emotions[idx];
+  const confidence = (max * 100).toFixed(1);
+
+  resultText.innerText = `Emotion: ${emotion}`;
+  confidenceText.innerText = `Confidence: ${confidence}%`;
+
+  saveHistory(emotion, confidence);
+  loadHistory();
 };
+
+// ---------- HISTORY ----------
+function saveHistory(emotion, confidence) {
+  const history = JSON.parse(localStorage.getItem("history") || "[]");
+  history.unshift({ emotion, confidence, time: new Date().toLocaleString() });
+  localStorage.setItem("history", JSON.stringify(history.slice(0, 10)));
+}
+
+function loadHistory() {
+  historyList.innerHTML = "";
+  const history = JSON.parse(localStorage.getItem("history") || "[]");
+  history.forEach(h => {
+    const li = document.createElement("li");
+    li.textContent = `${h.time} → ${h.emotion} (${h.confidence}%)`;
+    historyList.appendChild(li);
+  });
+}
