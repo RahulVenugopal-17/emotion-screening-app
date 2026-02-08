@@ -5,7 +5,7 @@ const factText = document.getElementById("fact");
 
 let model;
 
-// PAGE SWITCH
+/* ---------- PAGE SWITCH ---------- */
 function showPage(num) {
   pages.forEach(p => p.classList.remove("active"));
   document.getElementById(`page${num}`).classList.add("active");
@@ -16,30 +16,54 @@ function showPage(num) {
   }
 }
 
-// SAVE USER DATA (LOCAL ONLY)
-function saveUser() {
+/* ---------- SAVE USER + SUPABASE AUTH ---------- */
+async function saveUser() {
   const name = document.getElementById("name").value;
-  if (!name) {
-    alert("Please enter your name");
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  if (!name || !email || !password) {
+    alert("Please fill all required fields");
     return;
   }
+
   sessionStorage.setItem("username", name);
+
+  // Try login
+  let { error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  // If user does not exist → signup
+  if (error) {
+    const res = await supabase.auth.signUp({
+      email,
+      password
+    });
+    if (res.error) {
+      alert(res.error.message);
+      return;
+    }
+  }
+
   showPage(2);
 }
 
-// CAMERA
+/* ---------- CAMERA ---------- */
 document.getElementById("startBtn").onclick = async () => {
   const stream = await navigator.mediaDevices.getUserMedia({ video: true });
   video.srcObject = stream;
 };
 
-// LOAD MODEL
+/* ---------- LOAD MODEL ---------- */
 async function loadModel() {
   model = await tf.loadLayersModel("./model/model.json");
+  console.log("Model loaded");
 }
 loadModel();
 
-// PREPROCESS
+/* ---------- PREPROCESS ---------- */
 const canvas = document.createElement("canvas");
 canvas.width = 48;
 canvas.height = 48;
@@ -55,7 +79,7 @@ function captureFrame() {
     .expandDims(-1);
 }
 
-// EMOTIONS + EMOJIS
+/* ---------- EMOTIONS ---------- */
 const emotions = [
   { name: "Angry", emoji: "😠" },
   { name: "Disgust", emoji: "🤢" },
@@ -66,7 +90,7 @@ const emotions = [
   { name: "Neutral", emoji: "😐" }
 ];
 
-// FACTS
+/* ---------- FACTS ---------- */
 const emotionFacts = {
   Happy: [
     "Positive emotions encourage social engagement in autism.",
@@ -98,14 +122,23 @@ const emotionFacts = {
   ]
 };
 
-// ANALYZE
-document.getElementById("analyzeBtn").onclick = async () => {
-  const img = captureFrame();
-  const prediction = model.predict(img);
-  const data = await prediction.data();
+/* ---------- TEMPORAL AVERAGING ---------- */
 
-  const index = data.indexOf(Math.max(...data));
-  const emotion = emotions[index];
+document.getElementById("analyzeBtn").onclick = analyzeEmotionTemporally;
+
+async function analyzeEmotionTemporally() {
+  resultText.innerText = "Analyzing...";
+  const predictions = [];
+  const startTime = Date.now();
+
+  while (Date.now() - startTime < 2000) { // 2 seconds
+    const emotionIndex = await predictSingleFrame();
+    predictions.push(emotionIndex);
+    await sleep(200); // ~5 FPS
+  }
+
+  const finalIndex = dominantIndex(predictions);
+  const emotion = emotions[finalIndex];
 
   resultText.innerText =
     `Detected Emotion: ${emotion.name} ${emotion.emoji}`;
@@ -113,5 +146,32 @@ document.getElementById("analyzeBtn").onclick = async () => {
   const facts = emotionFacts[emotion.name];
   factText.innerText =
     facts[Math.floor(Math.random() * facts.length)];
-};
+
+  // Store in Supabase
+  await supabase.from("emotion_history").insert({
+    emotion: emotion.name
+  });
+}
+
+/* ---------- SINGLE FRAME PREDICTION ---------- */
+async function predictSingleFrame() {
+  const img = captureFrame();
+  const prediction = model.predict(img);
+  const data = await prediction.data();
+
+  return data.indexOf(Math.max(...data));
+}
+
+/* ---------- HELPERS ---------- */
+function dominantIndex(list) {
+  const count = {};
+  list.forEach(i => count[i] = (count[i] || 0) + 1);
+  return Object.keys(count).reduce((a, b) =>
+    count[a] > count[b] ? a : b
+  );
+}
+
+function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
 
