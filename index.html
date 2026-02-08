@@ -3,13 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <title>Emotion Screening App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- TensorFlow.js -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.16.0/dist/tf.min.js"></script>
 
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+
+<body onload="initApp()">
 
   <!-- PAGE 1 : USER DETAILS -->
   <div id="page1" class="page active">
@@ -21,8 +26,8 @@
       <input id="phone" placeholder="Phone Number">
       <input id="password" type="password" placeholder="Password">
 
-      <button onclick="saveUser()">Continue</button>
-      <p class="note">Details are stored locally on this device.</p>
+      <button onclick="signupOrLogin()">Continue</button>
+      <p class="note">Authentication is securely handled.</p>
     </div>
   </div>
 
@@ -67,10 +72,16 @@
 
       <p id="result">Waiting for analysis...</p>
       <p id="fact"></p>
+
+      <hr>
+      <h3>📊 Emotion History</h3>
+      <ul id="historyList"></ul>
     </div>
   </div>
 
+  <!-- Scripts -->
+  <script src="supabase.js"></script>
   <script src="script.js"></script>
+
 </body>
 </html>
-
