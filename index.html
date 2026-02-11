@@ -69,6 +69,15 @@
       border-radius: 12px;
       margin-top: 10px;
     }
+    .upload-label {
+      display: block;
+      background: #0f766e;
+      color: white;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
     ul {
       text-align: left;
       padding-left: 18px;
@@ -96,12 +105,10 @@
 <div id="page2" class="page">
   <div class="card">
     <h2>🧠 Information</h2>
-
     <p><b>Autism Spectrum Disorder:</b> Affects communication and social interaction.</p>
     <p><b>Social Communication Disorder:</b> Difficulty using language socially.</p>
-    <p><b>ADHD:</b> Affects attention, impulse control, and emotional regulation.</p>
+    <p><b>ADHD:</b> Affects attention and emotional regulation.</p>
     <p><b>Sensory Processing Disorder:</b> Atypical response to sensory input.</p>
-
     <button id="backFromInfo">⬅ Back</button>
   </div>
 </div>
@@ -112,9 +119,10 @@
     <h2 id="greeting"></h2>
 
     <button id="startCam">📸 Start Camera</button>
-    <button id="uploadBtn">🖼️ Upload Image</button>
 
-    <input type="file" id="imageInput" accept="image/*" style="display:none">
+    <!-- ✅ Correct upload method -->
+    <label for="imageInput" class="upload-label">🖼️ Upload Image</label>
+    <input type="file" id="imageInput" accept="image/*" hidden>
 
     <video id="video" autoplay playsinline></video>
     <img id="previewImg" style="display:none">
