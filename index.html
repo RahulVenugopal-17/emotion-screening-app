@@ -12,25 +12,34 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f0f9ff;
+      background: #eef6ff;
       transition: 0.3s;
     }
     body.dark {
       background: #0f172a;
       color: #e5e7eb;
     }
-    .page { display: none; min-height: 100vh; justify-content: center; align-items: center; }
-    .active { display: flex; }
+    .page {
+      display: none;
+      min-height: 100vh;
+      justify-content: center;
+      align-items: center;
+    }
+    .active {
+      display: flex;
+    }
     .card {
       background: white;
-      padding: 25px;
+      padding: 24px;
       border-radius: 16px;
       width: 90%;
       max-width: 420px;
       text-align: center;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
-    body.dark .card { background: #020617; }
+    body.dark .card {
+      background: #020617;
+    }
     input, button {
       width: 100%;
       padding: 12px;
@@ -39,18 +48,32 @@
       border: none;
       font-size: 16px;
     }
-    button { background: #0f766e; color: white; cursor: pointer; }
+    button {
+      background: #0f766e;
+      color: white;
+      cursor: pointer;
+    }
     .option {
-      background: #e0f2fe;
-      padding: 15px;
+      background: #dbeafe;
+      padding: 16px;
       margin: 10px 0;
       border-radius: 12px;
       cursor: pointer;
       font-weight: bold;
     }
-    body.dark .option { background: #1e293b; }
-    video { width: 100%; border-radius: 12px; }
-    .small { font-size: 13px; }
+    body.dark .option {
+      background: #1e293b;
+    }
+    video, img {
+      width: 100%;
+      border-radius: 12px;
+      margin-top: 10px;
+    }
+    ul {
+      text-align: left;
+      padding-left: 18px;
+      font-size: 13px;
+    }
   </style>
 </head>
 
@@ -61,8 +84,10 @@
   <div class="card">
     <h2>👋 Welcome</h2>
     <input id="nameInput" placeholder="Enter your name">
+
     <div class="option" id="emotionBox">🎥 Emotion Recognition</div>
     <div class="option" id="infoBox">📘 Information</div>
+
     <button id="darkToggle">🌙 Toggle Dark Mode</button>
   </div>
 </div>
@@ -71,10 +96,12 @@
 <div id="page2" class="page">
   <div class="card">
     <h2>🧠 Information</h2>
+
     <p><b>Autism Spectrum Disorder:</b> Affects communication and social interaction.</p>
     <p><b>Social Communication Disorder:</b> Difficulty using language socially.</p>
-    <p><b>ADHD:</b> Affects attention, impulse control, emotional regulation.</p>
+    <p><b>ADHD:</b> Affects attention, impulse control, and emotional regulation.</p>
     <p><b>Sensory Processing Disorder:</b> Atypical response to sensory input.</p>
+
     <button id="backFromInfo">⬅ Back</button>
   </div>
 </div>
@@ -83,15 +110,22 @@
 <div id="page3" class="page">
   <div class="card">
     <h2 id="greeting"></h2>
+
     <button id="startCam">📸 Start Camera</button>
+    <button id="uploadBtn">🖼️ Upload Image</button>
+
+    <input type="file" id="imageInput" accept="image/*" style="display:none">
+
     <video id="video" autoplay playsinline></video>
-    <button id="analyze">✨ Analyze Emotion</button>
+    <img id="previewImg" style="display:none">
+
+    <button id="analyzeBtn">✨ Analyze Emotion</button>
 
     <p id="result">Waiting...</p>
-    <p id="confidence" class="small"></p>
+    <p id="confidence"></p>
 
     <h4>Emotion History</h4>
-    <ul id="history" class="small"></ul>
+    <ul id="history"></ul>
 
     <button id="backFromCam">⬅ Back</button>
   </div>
