@@ -12,7 +12,6 @@ const backFromCam = document.getElementById("backFromCam");
 const darkToggle = document.getElementById("darkToggle");
 
 const startCam = document.getElementById("startCam");
-const uploadBtn = document.getElementById("uploadBtn");
 const imageInput = document.getElementById("imageInput");
 const analyzeBtn = document.getElementById("analyzeBtn");
 
@@ -34,7 +33,7 @@ if (localStorage.getItem("dark") === "true") {
   document.body.classList.add("dark");
 }
 
-/* ---------- NAV BUTTONS ---------- */
+/* ---------- NAV ---------- */
 emotionBox.onclick = () => {
   const name = document.getElementById("nameInput").value.trim();
   if (!name) return alert("Please enter your name");
@@ -57,8 +56,6 @@ startCam.onclick = async () => {
 };
 
 /* ---------- IMAGE UPLOAD ---------- */
-uploadBtn.onclick = () => imageInput.click();
-
 imageInput.onchange = (e) => {
   const file = e.target.files[0];
   if (!file) return;
