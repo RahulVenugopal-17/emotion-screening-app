@@ -1,104 +1,114 @@
-const pages = document.querySelectorAll(".page");
+// =====================
+// GLOBAL ELEMENTS
+// =====================
 const video = document.getElementById("video");
-const preview = document.getElementById("preview");
 const resultText = document.getElementById("result");
 const confidenceText = document.getElementById("confidence");
+const suggestionText = document.getElementById("suggestion");
+const historyList = document.getElementById("historyList");
+const emotionSection = document.getElementById("emotionSection");
 
 let model;
-let useFront = true;
-let stream = null;
-let uploadedTensor = null;
+let stream;
+let predictionsBuffer = [];
 
-// ---------------- NAVIGATION ----------------
-function showPage(n) {
-  pages.forEach(p => p.classList.remove("active"));
-  document.getElementById(`page${n}`).classList.add("active");
+// =====================
+// APP INIT
+// =====================
+function initApp() {
+  loadModel();
+  loadHistory();
+  loadTheme();
 }
 
-// ---------------- MENU ----------------
-function toggleMenu() {
-  document.getElementById("sideMenu").classList.toggle("open");
+// =====================
+// MODEL
+// =====================
+async function loadModel() {
+  model = await tf.loadLayersModel("./model/model.json");
+  console.log("Model loaded");
 }
 
-// ---------------- THEME ----------------
-function toggleTheme() {
-  document.body.classList.toggle("dark");
-  localStorage.setItem("theme", document.body.classList.contains("dark"));
-}
-if (localStorage.getItem("theme") === "true") {
-  document.body.classList.add("dark");
-}
-
-// ---------------- START APP ----------------
-function startApp() {
-  const name = document.getElementById("nameInput").value.trim();
+// =====================
+// NAVIGATION
+// =====================
+function goToEmotion() {
+  const name = document.getElementById("username").value.trim();
   if (!name) {
     alert("Please enter your name");
     return;
   }
 
-  localStorage.setItem("user", name);
+  localStorage.setItem("username", name);
+  document.getElementById("greeting").innerText = `Hello ${name} 👋`;
   document.getElementById("menuUser").innerText = `Hello ${name} 👋`;
-  document.getElementById("greeting").innerText = `Hello ${name}`;
-  loadHistory();
-  showPage(3);
+
+  emotionSection.classList.remove("hidden");
 }
 
-// ---------------- CAMERA ----------------
-async function startCamera() {
-  uploadedTensor = null;
-  preview.style.display = "none";
-  video.style.display = "block";
+// =====================
+// HAMBURGER MENU
+// =====================
+function toggleMenu() {
+  document.getElementById("sideMenu").classList.toggle("open");
+  document.getElementById("menuOverlay").classList.toggle("show");
+}
 
-  if (stream) {
-    stream.getTracks().forEach(t => t.stop());
+function closeMenu() {
+  document.getElementById("sideMenu").classList.remove("open");
+  document.getElementById("menuOverlay").classList.remove("show");
+}
+
+// =====================
+// THEME
+// =====================
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+  localStorage.setItem(
+    "theme",
+    document.body.classList.contains("dark") ? "dark" : "light"
+  );
+}
+
+function loadTheme() {
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark");
   }
+}
+
+// =====================
+// CAMERA
+// =====================
+async function startCamera() {
+  if (stream) return;
 
   stream = await navigator.mediaDevices.getUserMedia({
-    video: { facingMode: useFront ? "user" : "environment" }
+    video: { facingMode: "user" }
   });
 
   video.srcObject = stream;
 }
 
-function switchCamera() {
-  useFront = !useFront;
-  startCamera();
-}
+// =====================
+// EMOTION LOGIC
+// =====================
+const emotions = [
+  "Angry 😠",
+  "Disgust 🤢",
+  "Fear 😨",
+  "Happy 😊",
+  "Sad 😢",
+  "Surprise 😲",
+  "Neutral 😐"
+];
 
-// ---------------- IMAGE UPLOAD ----------------
-function loadImage(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  if (stream) {
-    stream.getTracks().forEach(t => t.stop());
-  }
-
-  const img = new Image();
-  img.onload = () => {
-    preview.src = img.src;
-    preview.style.display = "block";
-    video.style.display = "none";
-    uploadedTensor = preprocess(img);
-  };
-  img.src = URL.createObjectURL(file);
-}
-
-// ---------------- MODEL LOAD ----------------
-async function loadModel() {
-  model = await tf.loadLayersModel("./model/model.json");
-}
-loadModel();
-
-// ---------------- PREPROCESS ----------------
 const canvas = document.createElement("canvas");
 canvas.width = 48;
 canvas.height = 48;
 const ctx = canvas.getContext("2d");
 
-function preprocess(source) {
-  ctx.drawImage(source, 0, 0, 48, 48);
+function captureFrame() {
+  ctx.drawImage(video, 0, 0, 48, 48);
   return tf.browser
     .fromPixels(canvas)
     .mean(2)
@@ -108,83 +118,73 @@ function preprocess(source) {
     .expandDims(-1);
 }
 
-// ---------------- EMOTION ANALYSIS ----------------
-const emotions = [
-  "Angry",
-  "Disgust",
-  "Fear",
-  "Happy",
-  "Sad",
-  "Surprise",
-  "Neutral"
-];
-
+// =====================
+// DOUBLE VERIFICATION
+// =====================
 async function analyzeEmotion() {
-  if (!model) {
-    alert("Model still loading, please wait");
+  if (!model || !stream) {
+    alert("Start camera first");
     return;
   }
 
-  let totals = new Array(7).fill(0);
+  predictionsBuffer = [];
 
-  // Temporal averaging (10 frames)
-  for (let i = 0; i < 10; i++) {
-    const input = uploadedTensor || preprocess(video);
-    const data = await model.predict(input).data();
-
-    data.forEach((v, j) => totals[j] += v);
-    await new Promise(r => setTimeout(r, 100));
+  for (let i = 0; i < 5; i++) {
+    const img = captureFrame();
+    const pred = model.predict(img);
+    const data = await pred.data();
+    predictionsBuffer.push(data);
+    await new Promise(r => setTimeout(r, 200));
   }
 
-  const avg = totals.map(v => v / 10);
-  const maxVal = Math.max(...avg);
-  const index = avg.indexOf(maxVal);
+  const avg = averagePredictions(predictionsBuffer);
+  const index = avg.indexOf(Math.max(...avg));
+  const confidence = Math.round(avg[index] * 100);
 
   const emotion = emotions[index];
-  const confidence = (maxVal * 100).toFixed(1);
 
-  // --- DISPLAY RESULT ---
   resultText.innerText = `Detected Emotion: ${emotion}`;
   confidenceText.innerText = `Confidence: ${confidence}%`;
 
-  // --- GUIDANCE MESSAGE ---
-  if (confidence < 60) {
-    confidenceText.innerText +=
-      "\n⚠️ For better accuracy, improve lighting, keep your face closer, and look directly at the camera.";
-  } else {
-    confidenceText.innerText +=
-      "\n✅ Detection confidence is good.";
-  }
+  suggestionText.innerText =
+    confidence < 60
+      ? "Improve lighting or bring your face closer for better accuracy."
+      : "Good detection quality ✔";
 
   saveHistory(emotion, confidence);
-  loadHistory();
 }
 
-// ---------------- HISTORY ----------------
+// =====================
+// HELPERS
+// =====================
+function averagePredictions(preds) {
+  const avg = new Array(preds[0].length).fill(0);
+  preds.forEach(p => p.forEach((v, i) => (avg[i] += v)));
+  return avg.map(v => v / preds.length);
+}
+
+// =====================
+// HISTORY
+// =====================
 function saveHistory(emotion, confidence) {
   const history = JSON.parse(localStorage.getItem("history") || "[]");
-
   history.unshift({
     emotion,
     confidence,
     time: new Date().toLocaleString()
   });
-
-  localStorage.setItem("history", JSON.stringify(history.slice(0, 10)));
+  localStorage.setItem("history", JSON.stringify(history));
+  loadHistory();
 }
 
 function loadHistory() {
-  const list = document.getElementById("historyList");
-  if (!list) return;
-
-  list.innerHTML = "";
+  historyList.innerHTML = "";
   const history = JSON.parse(localStorage.getItem("history") || "[]");
 
-  history.forEach(item => {
+  history.forEach(h => {
     const li = document.createElement("li");
-    li.textContent =
-      `${item.time} – ${item.emotion} (${item.confidence}%)`;
-    list.appendChild(li);
+    li.innerText = `${h.emotion} (${h.confidence}%) • ${h.time}`;
+    historyList.appendChild(li);
   });
 }
 
