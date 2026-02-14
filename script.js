@@ -2,108 +2,138 @@ const pages = document.querySelectorAll(".page");
 const video = document.getElementById("video");
 
 let model;
-let history = JSON.parse(localStorage.getItem("history") || "[]");
+let currentCamera = "user";
+let stream = null;
 
-// NAV
+// ---------- NAV ----------
 function showPage(id) {
   pages.forEach(p => p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
 function goHome() { showPage("page1"); }
-function goToInfo() { showPage("page2"); }
-function goToEmotion() { showPage("page3"); }
+function goToEmotion() { showPage("page2"); }
+function goToInfo() { showPage("page3"); }
 
-// MENU
-function toggleMenu() {
-  document.getElementById("sideMenu").classList.toggle("open");
-  document.getElementById("menuOverlay").classList.toggle("show");
-}
-function closeMenu() {
-  document.getElementById("sideMenu").classList.remove("open");
-  document.getElementById("menuOverlay").classList.remove("show");
-}
-
-// THEME
-function toggleTheme() {
-  document.body.classList.toggle("light");
-}
-
-// USER
+// ---------- START ----------
 function startApp() {
-  const name = document.getElementById("usernameInput").value;
-  if (!name) return alert("Enter name");
+  const name = document.getElementById("usernameInput").value.trim();
+  if (!name) return alert("Enter your name");
+
   localStorage.setItem("username", name);
   document.getElementById("menuUser").innerText = `Hello ${name} 👋`;
+  goToEmotion();
 }
 
-// CAMERA
+// ---------- MENU ----------
+function toggleMenu() {
+  document.getElementById("menu").classList.toggle("open");
+}
+
+// ---------- THEME ----------
+function toggleTheme() {
+  document.body.classList.toggle("light");
+  document.body.classList.toggle("dark");
+}
+
+// ---------- CAMERA ----------
 async function startCamera() {
-  const stream = await navigator.mediaDevices.getUserMedia({
-    video: { facingMode: "user" }
+  if (stream) stream.getTracks().forEach(t => t.stop());
+
+  stream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: currentCamera }
   });
   video.srcObject = stream;
 }
 
-// MODEL
-(async () => {
+function switchCamera() {
+  currentCamera = currentCamera === "user" ? "environment" : "user";
+  startCamera();
+}
+
+// ---------- GALLERY ----------
+function openGallery() {
+  document.getElementById("imageUpload").click();
+}
+
+// ---------- MODEL ----------
+async function loadModel() {
   model = await tf.loadLayersModel("./model/model.json");
-})();
+}
+loadModel();
 
-// ANALYSIS
+// ---------- ANALYSIS ----------
+const canvas = document.createElement("canvas");
+canvas.width = 48;
+canvas.height = 48;
+const ctx = canvas.getContext("2d");
+
+function preprocess(source) {
+  ctx.drawImage(source, 0, 0, 48, 48);
+  return tf.browser.fromPixels(canvas)
+    .mean(2)
+    .toFloat()
+    .div(255)
+    .expandDims(0)
+    .expandDims(-1);
+}
+
+const emotions = ["Angry","Disgust","Fear","Happy","Sad","Surprise","Neutral"];
+
 async function analyzeEmotion() {
-  if (!model) return alert("Model loading");
+  const img = preprocess(video);
+  const pred = model.predict(img);
+  const data = await pred.data();
 
-  const canvas = document.createElement("canvas");
-  canvas.width = 48;
-  canvas.height = 48;
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(video, 0, 0, 48, 48);
-
-  const img = tf.browser.fromPixels(canvas)
-    .mean(2).toFloat().div(255)
-    .expandDims(0).expandDims(-1);
-
-  const preds = model.predict(img);
-  const data = await preds.data();
   const idx = data.indexOf(Math.max(...data));
   const confidence = (data[idx] * 100).toFixed(1);
 
-  const emotions = ["Angry","Disgust","Fear","Happy","Sad","Surprise","Neutral"];
-  const emotion = emotions[idx];
+  document.getElementById("result").innerText =
+    `Emotion: ${emotions[idx]}`;
+  document.getElementById("confidence").innerText =
+    `Confidence: ${confidence}%`;
 
-  document.getElementById("result").innerText = `Emotion: ${emotion}`;
-  document.getElementById("confidence").innerText = `Confidence: ${confidence}%`;
-
-  document.getElementById("suggestion").innerText =
+  document.getElementById("hint").innerText =
     confidence < 60
-      ? "Improve lighting or bring face closer"
-      : "Detection looks reliable";
+      ? "Improve lighting or bring your face closer"
+      : "Good detection conditions";
 
-  history.push({ emotion, time: new Date().toLocaleString() });
-  localStorage.setItem("history", JSON.stringify(history));
+  saveHistory(emotions[idx], confidence);
 }
 
-// IMAGE UPLOAD
 function analyzeImage(e) {
   const img = new Image();
-  img.onload = () => {
-    const canvas = document.createElement("canvas");
-    canvas.width = 48;
-    canvas.height = 48;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0, 48, 48);
-  };
+  img.onload = () => analyzeEmotionFromImage(img);
   img.src = URL.createObjectURL(e.target.files[0]);
 }
 
-// HISTORY
+async function analyzeEmotionFromImage(img) {
+  const tensor = preprocess(img);
+  const pred = model.predict(tensor);
+  const data = await pred.data();
+
+  const idx = data.indexOf(Math.max(...data));
+  const confidence = (data[idx] * 100).toFixed(1);
+
+  document.getElementById("result").innerText =
+    `Emotion: ${emotions[idx]}`;
+  document.getElementById("confidence").innerText =
+    `Confidence: ${confidence}%`;
+}
+
+// ---------- HISTORY ----------
+function saveHistory(emotion, confidence) {
+  const history = JSON.parse(localStorage.getItem("history") || "[]");
+  history.push({ emotion, confidence, time: new Date().toLocaleString() });
+  localStorage.setItem("history", JSON.stringify(history));
+}
+
 function showHistory() {
-  alert(history.map(h => `${h.time} - ${h.emotion}`).join("\n") || "No history");
+  const history = JSON.parse(localStorage.getItem("history") || "[]");
+  alert(history.map(h => `${h.time} - ${h.emotion} (${h.confidence}%)`).join("\n"));
 }
 
 function clearHistory() {
   localStorage.removeItem("history");
-  history = [];
   alert("History cleared");
 }
