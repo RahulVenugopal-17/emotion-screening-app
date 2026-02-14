@@ -1,76 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>EmoReg</title>
 
-  <!-- TensorFlow.js -->
+  <!-- TensorFlow -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.16.0/dist/tf.min.js"></script>
+
+  <!-- face-api.js -->
+  <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 
   <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="dark">
+<body>
 
-  <!-- TOP BAR -->
-  <header class="topbar">
-    <span class="logo">EmoReg</span>
-    <div class="top-actions">
-      <button class="icon-btn" onclick="toggleTheme()">🌙</button>
-      <button class="icon-btn" onclick="toggleMenu()">☰</button>
-    </div>
-  </header>
+<header class="topbar">
+  <span class="title">EmoReg</span>
+  <button id="menuBtn">☰</button>
+</header>
 
-  <!-- HAMBURGER MENU -->
-  <aside id="menu">
-    <h3 id="menuUser">Hello 👋</h3>
-    <button onclick="showHistory()">📜 Emotion History</button>
-    <button onclick="clearHistory()">🧹 Clear History</button>
-    <button onclick="toggleMenu()">❌ Close</button>
-  </aside>
+<!-- Hamburger -->
+<div id="overlay"></div>
+<aside id="drawer">
+  <button id="closeBtn">✕</button>
+  <p id="userLabel">Hello 👋</p>
+  <h4>Emotion History</h4>
+  <ul id="history"></ul>
+  <button onclick="clearHistory()">Clear History</button>
+</aside>
 
-  <!-- PAGE 1 -->
-  <section id="page1" class="page active">
-    <h2>👋 Welcome</h2>
-    <input id="usernameInput" placeholder="Enter your name"/>
-    <button onclick="startApp()">Continue</button>
+<main>
 
-    <button onclick="goToEmotion()">🎭 Emotion Recognition</button>
-    <button onclick="goToInfo()">📘 Information</button>
-  </section>
+<!-- PAGE 1 -->
+<section id="page1" class="page active">
+  <h2>Welcome</h2>
+  <input id="username" placeholder="Enter your name">
+  <button onclick="saveName()">Continue</button>
+  <button onclick="showPage(2)">😊 Emotion Recognition</button>
+  <button onclick="showPage(3)">ℹ Information</button>
+</section>
 
-  <!-- PAGE 2 -->
-  <section id="page2" class="page">
-    <h2>📸 Emotion Recognition</h2>
+<!-- PAGE 2 -->
+<section id="page2" class="page">
+  <button onclick="startCamera()">📷 Start Camera</button>
+  <button onclick="switchCamera()">🔄 Switch Camera</button>
 
-    <button onclick="startCamera()">📷 Start Camera</button>
-    <button onclick="switchCamera()">🔄 Switch Camera</button>
+  <video id="video" autoplay playsinline></video>
 
-    <button onclick="openGallery()">🖼 Upload Image</button>
-    <input type="file" id="imageUpload" accept="image/*" hidden onchange="analyzeImage(event)">
+  <button onclick="analyzeEmotion()">✨ Analyze Emotion</button>
 
-    <video id="video" autoplay playsinline></video>
+  <p id="result"></p>
+  <p id="confidence"></p>
+  <p id="hint"></p>
 
-    <button onclick="analyzeEmotion()">✨ Analyze Emotion</button>
+  <button onclick="showPage(1)">← Back</button>
+</section>
 
-    <p id="result"></p>
-    <p id="confidence"></p>
-    <p id="hint"></p>
+<!-- PAGE 3 -->
+<section id="page3" class="page">
+  <h3>About</h3>
+  <p><b>Autism Spectrum Disorder</b> affects social communication and emotional expression.</p>
+  <p><b>Social Communication Disorder</b> impacts verbal and non-verbal communication.</p>
+  <p><b>ADHD</b> affects attention and emotional regulation.</p>
+  <p><b>Sensory Processing Disorder</b> affects response to sensory stimuli.</p>
 
-    <button onclick="goHome()">← Back</button>
-  </section>
+  <button onclick="showPage(1)">← Back</button>
+</section>
 
-  <!-- PAGE 3 -->
-  <section id="page3" class="page">
-    <h2>📘 Information</h2>
-    <p><b>Autism Spectrum Disorder:</b> Affects social communication and emotional expression.</p>
-    <p><b>Social Communication Disorder:</b> Difficulty using language socially.</p>
-    <p><b>ADHD:</b> Impulsivity and attention challenges.</p>
-    <p><b>Sensory Processing Disorder:</b> Heightened sensory sensitivity.</p>
-    <button onclick="goHome()">← Back</button>
-  </section>
+</main>
 
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
+
