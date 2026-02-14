@@ -2,140 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Emotion Screening App</title>
+  <title>EmoReg</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- TensorFlow.js -->
+  <!-- TensorFlow -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.16.0/dist/tf.min.js"></script>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #eef6ff;
-      transition: 0.3s;
-    }
-    body.dark {
-      background: #0f172a;
-      color: #e5e7eb;
-    }
-    .page {
-      display: none;
-      min-height: 100vh;
-      justify-content: center;
-      align-items: center;
-    }
-    .active {
-      display: flex;
-    }
-    .card {
-      background: white;
-      padding: 24px;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 420px;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-    body.dark .card {
-      background: #020617;
-    }
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0;
-      border-radius: 10px;
-      border: none;
-      font-size: 16px;
-    }
-    button {
-      background: #0f766e;
-      color: white;
-      cursor: pointer;
-    }
-    .option {
-      background: #dbeafe;
-      padding: 16px;
-      margin: 10px 0;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    body.dark .option {
-      background: #1e293b;
-    }
-    video, img {
-      width: 100%;
-      border-radius: 12px;
-      margin-top: 10px;
-    }
-    .upload-label {
-      display: block;
-      background: #0f766e;
-      color: white;
-      padding: 12px;
-      border-radius: 10px;
-      cursor: pointer;
-      margin-top: 8px;
-    }
-    ul {
-      text-align: left;
-      padding-left: 18px;
-      font-size: 13px;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="app-title">EmoReg</div>
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+</div>
+
+<!-- SIDE MENU -->
+<div id="sideMenu" class="side-menu">
+  <div class="menu-header" id="menuUser">Hello 👋</div>
+
+  <button class="menu-action" onclick="toggleTheme()">🌙 / ☀️ Theme</button>
+
+  <h4>Emotion History</h4>
+  <ul id="historyList"></ul>
+
+  <button class="menu-action danger" onclick="clearHistory()">🧹 Clear History</button>
+</div>
+
 <!-- PAGE 1 -->
 <div id="page1" class="page active">
   <div class="card">
-    <h2>👋 Welcome</h2>
+    <h2>Welcome</h2>
     <input id="nameInput" placeholder="Enter your name">
 
-    <div class="option" id="emotionBox">🎥 Emotion Recognition</div>
-    <div class="option" id="infoBox">📘 Information</div>
-
-    <button id="darkToggle">🌙 Toggle Dark Mode</button>
+    <div class="option" onclick="startApp()">🎭 Emotion Recognition</div>
+    <div class="option secondary" onclick="showPage(2)">📘 Information</div>
   </div>
 </div>
 
 <!-- PAGE 2 -->
 <div id="page2" class="page">
   <div class="card">
-    <h2>🧠 Information</h2>
-    <p><b>Autism Spectrum Disorder:</b> Affects communication and social interaction.</p>
-    <p><b>Social Communication Disorder:</b> Difficulty using language socially.</p>
-    <p><b>ADHD:</b> Affects attention and emotional regulation.</p>
-    <p><b>Sensory Processing Disorder:</b> Atypical response to sensory input.</p>
-    <button id="backFromInfo">⬅ Back</button>
+    <h3>About the App</h3>
+
+    <p><b>Autism Spectrum Disorder:</b>  
+    A neurodevelopmental condition affecting communication and social interaction.</p>
+
+    <p><b>Social Communication Disorder:</b>  
+    Difficulty using language appropriately in social contexts.</p>
+
+    <p><b>ADHD:</b>  
+    Impacts attention, impulse control, and emotional regulation.</p>
+
+    <p class="disclaimer">
+      ⚠️ This app is a screening support tool and not a medical diagnosis.
+    </p>
+
+    <button onclick="showPage(1)">⬅ Back</button>
   </div>
 </div>
 
 <!-- PAGE 3 -->
 <div id="page3" class="page">
   <div class="card">
-    <h2 id="greeting"></h2>
+    <h3 id="greeting"></h3>
 
-    <button id="startCam">📸 Start Camera</button>
+    <div class="button-row">
+      <button onclick="startCamera()">📸 Camera</button>
+      <button onclick="switchCamera()">🔄 Switch</button>
+    </div>
 
-    <!-- ✅ Correct upload method -->
-    <label for="imageInput" class="upload-label">🖼️ Upload Image</label>
-    <input type="file" id="imageInput" accept="image/*" hidden>
+    <label class="upload-box">
+      🖼 Upload Image
+      <input type="file" accept="image/*" hidden onchange="loadImage(event)">
+    </label>
 
     <video id="video" autoplay playsinline></video>
-    <img id="previewImg" style="display:none">
+    <img id="preview" />
 
-    <button id="analyzeBtn">✨ Analyze Emotion</button>
+    <button class="analyze-btn" onclick="analyzeEmotion()">✨ Analyze Emotion</button>
 
-    <p id="result">Waiting...</p>
-    <p id="confidence"></p>
-
-    <h4>Emotion History</h4>
-    <ul id="history"></ul>
-
-    <button id="backFromCam">⬅ Back</button>
+    <!-- RESULT SECTION -->
+    <div class="result-box">
+      <p id="result">Detected Emotion: —</p>
+      <p id="confidence" class="confidence-text"></p>
+    </div>
   </div>
 </div>
 
