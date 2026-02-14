@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <title>EmoReg</title>
 
+  <!-- TensorFlow -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.16.0/dist/tf.min.js"></script>
+
+  <!-- Face API -->
   <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 
   <link rel="stylesheet" href="style.css">
@@ -29,42 +32,45 @@
 
 <main>
 
-<section id="page1" class="page active">
-  <h2>Welcome</h2>
-  <input id="username" placeholder="Enter your name">
-  <button id="continueBtn">Continue</button>
-  <button id="goEmotion">😊 Emotion Recognition</button>
-  <button id="goInfo">ℹ Information</button>
-</section>
+  <!-- PAGE 1 -->
+  <section id="page1" class="page active">
+    <h2>Welcome</h2>
+    <input id="username" placeholder="Enter your name">
+    <button id="continueBtn">Continue</button>
+    <button id="emotionPageBtn">😊 Emotion Recognition</button>
+    <button id="infoPageBtn">ℹ Information</button>
+  </section>
 
-<section id="page2" class="page">
-  <button id="startCameraBtn">📷 Start Camera</button>
-  <button id="switchCameraBtn">🔄 Switch Camera</button>
+  <!-- PAGE 2 -->
+  <section id="page2" class="page">
+    <button id="startCameraBtn">📷 Start Camera</button>
+    <button id="switchCameraBtn">🔄 Switch Camera</button>
 
-  <video id="video" autoplay playsinline></video>
+    <video id="video" autoplay playsinline></video>
 
-  <button id="analyzeBtn">✨ Analyze Emotion</button>
+    <button id="analyzeBtn">✨ Analyze Emotion</button>
 
-  <p id="result"></p>
-  <p id="confidence"></p>
-  <p id="hint"></p>
+    <p id="result"></p>
+    <p id="confidence"></p>
+    <p id="hint"></p>
 
-  <button id="backFromEmotion">← Back</button>
-</section>
+    <button id="backFromEmotion">← Back</button>
+  </section>
 
-<section id="page3" class="page">
-  <h3>About</h3>
-  <p><b>Autism Spectrum Disorder</b> affects communication and emotional expression.</p>
-  <p><b>Social Communication Disorder</b> affects verbal & non-verbal interaction.</p>
-  <p><b>ADHD</b> affects attention and emotional regulation.</p>
-  <p><b>Sensory Processing Disorder</b> affects sensory responses.</p>
+  <!-- PAGE 3 -->
+  <section id="page3" class="page">
+    <h3>About</h3>
+    <p><b>Autism Spectrum Disorder</b> affects communication and emotional expression.</p>
+    <p><b>Social Communication Disorder</b> affects interaction.</p>
+    <p><b>ADHD</b> affects attention and regulation.</p>
+    <p><b>Sensory Processing Disorder</b> affects sensory response.</p>
 
-  <button id="backFromInfo">← Back</button>
-</section>
+    <button id="backFromInfo">← Back</button>
+  </section>
 
 </main>
 
-<!-- IMPORTANT: script at END -->
+<!-- SCRIPT MUST BE LAST -->
 <script src="script.js"></script>
 </body>
 </html>
