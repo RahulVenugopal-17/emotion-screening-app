@@ -2,71 +2,89 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>EmoReg</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- TensorFlow.js -->
+  <!-- TensorFlow -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.16.0/dist/tf.min.js"></script>
 
   <link rel="stylesheet" href="style.css">
 </head>
 
-<body onload="initApp()">
+<body>
 
-  <!-- Overlay -->
-  <div id="menuOverlay" class="menu-overlay" onclick="closeMenu()"></div>
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="app-title">EmoReg</div>
+  <div class="top-actions">
+    <button onclick="toggleTheme()">🌙</button>
+    <button onclick="toggleMenu()">☰</button>
+  </div>
+</div>
 
-  <!-- Top Bar -->
-  <div class="top-bar">
-    <div class="app-title">EmoReg</div>
-    <div class="hamburger" onclick="toggleMenu()">☰</div>
+<!-- OVERLAY -->
+<div id="menuOverlay" onclick="closeMenu()"></div>
+
+<!-- SIDE MENU -->
+<div id="sideMenu">
+  <div class="menu-header">
+    <span id="menuUser">Hello 👋</span>
+    <button onclick="closeMenu()">✕</button>
   </div>
 
-  <!-- Side Menu -->
-  <div id="sideMenu" class="side-menu">
-    <button class="close-menu" onclick="closeMenu()">✕</button>
+  <ul class="menu-list">
+    <li onclick="goHome(); closeMenu()">🏠 Home</li>
+    <li onclick="showHistory(); closeMenu()">📜 Emotion History</li>
+    <li onclick="toggleTheme()">🌗 Toggle Theme</li>
+    <li onclick="clearHistory()">🧹 Clear History</li>
+  </ul>
+</div>
 
-    <div class="menu-header" id="menuUser">Hello 👋</div>
+<!-- PAGE 1 -->
+<div id="page1" class="page active">
+  <div class="card">
+    <h2>👋 Welcome</h2>
+    <input id="usernameInput" placeholder="Enter your name"/>
+    <button onclick="startApp()">Continue</button>
 
-    <button class="menu-btn" onclick="toggleTheme()">🌙 / ☀ Theme</button>
-
-    <h3 class="menu-title">Emotion History</h3>
-    <ul id="historyList"></ul>
-
-    <button class="menu-btn danger" onclick="clearHistory()">🧹 Clear History</button>
+    <div class="choice-box" onclick="goToEmotion()">🎭 Emotion Recognition</div>
+    <div class="choice-box" onclick="goToInfo()">📘 Information</div>
   </div>
+</div>
 
-  <!-- MAIN CONTENT -->
-  <div class="main">
+<!-- PAGE 2 -->
+<div id="page2" class="page">
+  <div class="card">
+    <h2>🧠 Information</h2>
+    <p><b>Autism Spectrum Disorder:</b> affects social interaction and emotion expression.</p>
+    <p><b>Social Communication Disorder:</b> difficulty with verbal & non-verbal communication.</p>
+    <p><b>ADHD:</b> attention regulation and emotional impulsivity.</p>
+    <p><b>Sensory Processing Disorder:</b> heightened sensory sensitivity.</p>
 
-    <h2 id="greeting">Welcome 👋</h2>
-
-    <input id="username" placeholder="Enter your name" />
-
-    <div class="card" onclick="goToEmotion()">
-      😊 Emotion Recognition
-    </div>
-
-    <div class="card info">
-      🧠 Autism, Social Communication Disorder, ADHD & Sensory Processing Disorder
-    </div>
-
-    <!-- CAMERA SECTION -->
-    <div id="emotionSection" class="hidden">
-      <video id="video" autoplay playsinline></video>
-
-      <div class="controls">
-        <button class="primary" onclick="startCamera()">📷 Start Camera</button>
-        <button class="primary" onclick="analyzeEmotion()">✨ Analyze</button>
-      </div>
-
-      <p id="result"></p>
-      <p id="confidence"></p>
-      <p id="suggestion"></p>
-    </div>
-
+    <button onclick="goHome()">⬅ Back</button>
   </div>
+</div>
 
-  <script src="script.js"></script>
+<!-- PAGE 3 -->
+<div id="page3" class="page">
+  <div class="card">
+    <h2 id="greeting"></h2>
+
+    <button onclick="startCamera()">📸 Start Camera</button>
+    <input type="file" accept="image/*" id="imageUpload" onchange="analyzeImage(event)">
+
+    <video id="video" autoplay playsinline></video>
+
+    <button onclick="analyzeEmotion()">✨ Analyze Emotion</button>
+
+    <p id="result">Waiting...</p>
+    <p id="confidence"></p>
+    <p id="suggestion"></p>
+
+    <button onclick="goHome()">⬅ Back</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
