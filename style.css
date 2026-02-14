@@ -1,14 +1,12 @@
 :root {
-  --bg: #eef6ff;
-  --card: #ffffff;
-  --text: #0f172a;
   --primary: #0f766e;
-  --secondary: #2563eb;
+  --primary-dark: #0b4f4a;
+  --bg: #f4f7f8;
+  --text: #0f172a;
 }
 
 body.dark {
-  --bg: #0f172a;
-  --card: #020617;
+  --bg: #020617;
   --text: #e5e7eb;
 }
 
@@ -21,185 +19,132 @@ body {
 
 /* Top Bar */
 .top-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
   height: 56px;
   background: var(--primary);
   color: white;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 0 16px;
-  z-index: 1000;
 }
 
-.app-title {
-  font-weight: bold;
-  font-size: 18px;
-}
-
-.menu-btn {
-  font-size: 24px;
-  background: none;
-  border: none;
-  color: white;
+.hamburger {
+  font-size: 22px;
   cursor: pointer;
+}
+
+/* Main */
+.main {
+  padding: 16px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  margin-bottom: 16px;
+}
+
+/* Cards */
+.card {
+  background: var(--primary);
+  color: white;
+  padding: 18px;
+  border-radius: 18px;
+  margin-bottom: 14px;
+  cursor: pointer;
+}
+
+.card.info {
+  background: #334155;
+}
+
+/* Camera */
+video {
+  width: 100%;
+  border-radius: 16px;
+  margin-top: 12px;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.primary {
+  flex: 1;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 14px;
 }
 
 /* Side Menu */
 .side-menu {
   position: fixed;
   top: 0;
-  right: -280px;
+  left: -260px;
   width: 260px;
   height: 100%;
-  background: var(--card);
-  box-shadow: -4px 0 15px rgba(0,0,0,0.3);
+  background: var(--bg);
   padding: 16px;
-  transition: right 0.3s ease;
+  transition: left 0.3s ease;
   z-index: 2000;
 }
 
 .side-menu.open {
-  right: 0;
+  left: 0;
 }
 
-.menu-header {
-  font-weight: bold;
-  margin-bottom: 10px;
+.close-menu {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
 }
 
-.menu-action {
+.menu-btn {
   width: 100%;
-  margin: 6px 0;
+  background: var(--primary);
+  color: white;
+  border: none;
   padding: 10px;
-  border-radius: 10px;
-  border: none;
-  background: var(--primary);
-  color: white;
-  cursor: pointer;
-}
-
-.menu-action.danger {
-  background: #dc2626;
-}
-
-.side-menu ul {
-  list-style: none;
-  padding: 0;
-  font-size: 14px;
-}
-
-.side-menu li {
-  margin-bottom: 8px;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 6px;
-}
-
-/* Pages */
-.page {
-  display: none;
-  min-height: 100vh;
-  padding: 70px 16px 16px;
-  justify-content: center;
-}
-
-.page.active {
-  display: flex;
-}
-
-.card {
-  background: var(--card);
-  padding: 20px;
-  border-radius: 18px;
-  width: 100%;
-  max-width: 420px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  text-align: center;
-}
-
-input {
-  width: 100%;
-  padding: 12px;
-  margin: 8px 0;
-  border-radius: 10px;
-  border: none;
-  font-size: 16px;
-}
-
-/* Options */
-.option {
-  background: #dbeafe;
-  padding: 16px;
-  border-radius: 14px;
-  margin: 10px 0;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.option.secondary {
-  background: #e0e7ff;
-}
-
-/* Buttons */
-button {
-  padding: 12px;
-  margin: 8px 0;
   border-radius: 12px;
-  border: none;
-  background: var(--primary);
-  color: white;
-  font-size: 16px;
-}
-
-.button-row {
-  display: flex;
-  gap: 10px;
-}
-
-.analyze-btn {
-  background: var(--secondary);
-}
-
-/* Upload */
-.upload-box {
-  display: block;
-  background: #f1f5f9;
-  padding: 12px;
-  border-radius: 12px;
-  margin: 10px 0;
-  cursor: pointer;
-}
-
-/* Media */
-video, img {
-  width: 100%;
-  border-radius: 14px;
   margin-top: 10px;
 }
 
-#preview {
+.menu-btn.danger {
+  background: #dc2626;
+}
+
+.menu-title {
+  margin-top: 20px;
+}
+
+/* Overlay */
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 1500;
+}
+
+.menu-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hidden {
   display: none;
 }
-
-/* Result */
-.result-box {
-  margin-top: 15px;
-  padding: 12px;
-  background: #f8fafc;
-  border-radius: 12px;
-}
-
-.confidence-text {
-  font-size: 14px;
-  margin-top: 6px;
-}
-
-/* Disclaimer */
-.disclaimer {
-  font-size: 13px;
-  margin-top: 12px;
-  color: #dc2626;
-  }
