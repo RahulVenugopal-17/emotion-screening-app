@@ -21,8 +21,8 @@ body {
 .topbar button {
   background: none;
   border: none;
-  font-size: 22px;
   color: white;
+  font-size: 22px;
 }
 
 /* Drawer */
@@ -55,10 +55,6 @@ body {
   display: block;
 }
 
-#drawer button {
-  width: 100%;
-}
-
 /* Pages */
 .page {
   display: none;
@@ -69,7 +65,7 @@ body {
   display: block;
 }
 
-/* Controls */
+/* Inputs & buttons */
 button {
   width: 100%;
   padding: 12px;
