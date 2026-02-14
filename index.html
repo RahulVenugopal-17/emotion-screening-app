@@ -1,76 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>EmoReg</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- TensorFlow -->
+  <!-- TensorFlow.js -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.16.0/dist/tf.min.js"></script>
-
-  <!-- Face API -->
-  <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<header class="topbar">
-  <span class="title">EmoReg</span>
-  <button id="menuBtn">☰</button>
-</header>
+<!-- PAGE 1 : WELCOME -->
+<div id="page-welcome" class="page active">
+  <div class="card">
+    <h2>👋 Welcome</h2>
+    <input id="usernameInput" type="text" placeholder="Enter your name">
+    <button onclick="saveName()">Continue</button>
+  </div>
+</div>
 
-<div id="overlay"></div>
+<!-- PAGE 2 : HOME -->
+<div id="page-home" class="page">
+  <div class="card">
+    <h2 id="welcomeText"></h2>
 
-<aside id="drawer">
-  <button id="closeBtn">✕</button>
-  <p id="userLabel">Hello 👋</p>
-  <h4>Emotion History</h4>
-  <ul id="history"></ul>
-  <button id="clearHistoryBtn">Clear History</button>
-</aside>
+    <button onclick="showPage('page-emotion')">😊 Emotion Recognition</button>
+    <button onclick="showPage('page-info')">📘 Information</button>
+  </div>
+</div>
 
-<main>
-
-  <!-- PAGE 1 -->
-  <section id="page1" class="page active">
-    <h2>Welcome</h2>
-    <input id="username" placeholder="Enter your name">
-    <button id="continueBtn">Continue</button>
-    <button id="emotionPageBtn">😊 Emotion Recognition</button>
-    <button id="infoPageBtn">ℹ Information</button>
-  </section>
-
-  <!-- PAGE 2 -->
-  <section id="page2" class="page">
-    <button id="startCameraBtn">📷 Start Camera</button>
-    <button id="switchCameraBtn">🔄 Switch Camera</button>
+<!-- PAGE 3 : EMOTION -->
+<div id="page-emotion" class="page">
+  <div class="card">
 
     <video id="video" autoplay playsinline></video>
 
-    <button id="analyzeBtn">✨ Analyze Emotion</button>
+    <button onclick="startCamera()">📸 Start Camera</button>
+    <button onclick="analyzeEmotion()">✨ Analyze Emotion</button>
 
-    <p id="result"></p>
-    <p id="confidence"></p>
-    <p id="hint"></p>
+    <p id="emotionResult">Waiting for analysis...</p>
 
-    <button id="backFromEmotion">← Back</button>
-  </section>
+    <button class="secondary" onclick="showPage('page-home')">← Back</button>
+  </div>
+</div>
 
-  <!-- PAGE 3 -->
-  <section id="page3" class="page">
-    <h3>About</h3>
-    <p><b>Autism Spectrum Disorder</b> affects communication and emotional expression.</p>
-    <p><b>Social Communication Disorder</b> affects interaction.</p>
-    <p><b>ADHD</b> affects attention and regulation.</p>
-    <p><b>Sensory Processing Disorder</b> affects sensory response.</p>
+<!-- PAGE 4 : INFO -->
+<div id="page-info" class="page">
+  <div class="card">
+    <h2>🧠 Information</h2>
 
-    <button id="backFromInfo">← Back</button>
-  </section>
+    <p><b>Autism Spectrum Disorder (ASD)</b><br>
+    Affects communication, emotional expression, and social interaction.</p>
 
-</main>
+    <p><b>Social Communication Disorder</b><br>
+    Difficulty using verbal and non-verbal communication in social contexts.</p>
 
-<!-- SCRIPT MUST BE LAST -->
+    <p><b>ADHD</b><br>
+    Impacts attention, impulsivity, and emotional regulation.</p>
+
+    <button class="secondary" onclick="showPage('page-home')">← Back</button>
+  </div>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>
