@@ -4,19 +4,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const pages = document.querySelectorAll(".page");
   const video = document.getElementById("video");
   const result = document.getElementById("result");
-  const confidenceText = document.getElementById("confidence");
+  const confidence = document.getElementById("confidence");
   const hint = document.getElementById("hint");
   const historyList = document.getElementById("history");
 
-  let stream;
+  let stream = null;
   let cameraFacing = "user";
-  let emotionModel;
-  let faceLoaded = false;
+  let emotionModel = null;
+  let faceReady = false;
 
   /* ---------- PAGE SWITCH ---------- */
-  function showPage(n) {
+  function showPage(pageNumber) {
     pages.forEach(p => p.classList.remove("active"));
-    const page = document.getElementById("page" + n);
+    const page = document.getElementById("page" + pageNumber);
     if (page) page.classList.add("active");
   }
 
@@ -34,9 +34,11 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ---------- CAMERA ---------- */
   async function startCamera() {
     if (stream) stream.getTracks().forEach(t => t.stop());
+
     stream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: cameraFacing }
     });
+
     video.srcObject = stream;
   }
 
@@ -49,12 +51,12 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loadModels() {
     emotionModel = await tf.loadLayersModel("./model/model.json");
     await faceapi.nets.tinyFaceDetector.loadFromUri("./models");
-    faceLoaded = true;
+    faceReady = true;
   }
   loadModels();
 
   async function facePresent() {
-    if (!faceLoaded) return false;
+    if (!faceReady) return false;
     const detection = await faceapi.detectSingleFace(
       video,
       new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.5 })
@@ -65,10 +67,11 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ---------- EMOTION ---------- */
   async function analyzeEmotion() {
     const hasFace = await facePresent();
+
     if (!hasFace) {
       result.innerText = "❌ No face detected";
-      confidenceText.innerText = "";
-      hint.innerText = "Improve lighting or move closer to the camera";
+      confidence.innerText = "";
+      hint.innerText = "Improve lighting or move closer";
       return;
     }
 
@@ -87,14 +90,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const preds = await emotionModel.predict(img).data();
     const emotions = ["Angry","Disgust","Fear","Happy","Sad","Surprise","Neutral"];
 
-    const i = preds.indexOf(Math.max(...preds));
-    const conf = (preds[i] * 100).toFixed(1);
+    const index = preds.indexOf(Math.max(...preds));
+    const conf = (preds[index] * 100).toFixed(1);
 
-    result.innerText = "Emotion: " + emotions[i];
-    confidenceText.innerText = "Confidence: " + conf + "%";
+    result.innerText = "Emotion: " + emotions[index];
+    confidence.innerText = "Confidence: " + conf + "%";
     hint.innerText = conf < 50 ? "Improve lighting or face position" : "";
 
-    saveHistory(emotions[i], conf);
+    saveHistory(emotions[index], conf);
   }
 
   /* ---------- HISTORY ---------- */
@@ -108,7 +111,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function loadHistory() {
     historyList.innerHTML = "";
     const h = JSON.parse(localStorage.getItem("history") || "[]");
-    h.forEach(x => historyList.innerHTML += `<li>${x}</li>`);
+    h.forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      historyList.appendChild(li);
+    });
   }
 
   function clearHistory() {
@@ -120,20 +127,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const drawer = document.getElementById("drawer");
   const overlay = document.getElementById("overlay");
 
-  menuBtn.onclick = () => {
+  document.getElementById("menuBtn").onclick = () => {
     drawer.classList.add("open");
     overlay.classList.add("show");
   };
 
-  closeBtn.onclick = overlay.onclick = () => {
+  document.getElementById("closeBtn").onclick =
+  overlay.onclick = () => {
     drawer.classList.remove("open");
     overlay.classList.remove("show");
   };
 
-  /* ---------- EVENTS ---------- */
+  /* ---------- EVENT BINDINGS ---------- */
   document.getElementById("continueBtn").onclick = saveName;
-  document.getElementById("goEmotion").onclick = () => showPage(2);
-  document.getElementById("goInfo").onclick = () => showPage(3);
+  document.getElementById("emotionPageBtn").onclick = () => showPage(2);
+  document.getElementById("infoPageBtn").onclick = () => showPage(3);
   document.getElementById("backFromEmotion").onclick = () => showPage(1);
   document.getElementById("backFromInfo").onclick = () => showPage(1);
 
