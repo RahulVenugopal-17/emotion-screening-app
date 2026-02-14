@@ -1,154 +1,103 @@
-document.addEventListener("DOMContentLoaded", () => {
+const pages = document.querySelectorAll(".page");
+const video = document.getElementById("video");
+const resultText = document.getElementById("emotionResult");
 
-  /* ---------- ELEMENTS ---------- */
-  const pages = document.querySelectorAll(".page");
-  const video = document.getElementById("video");
-  const result = document.getElementById("result");
-  const confidence = document.getElementById("confidence");
-  const hint = document.getElementById("hint");
-  const historyList = document.getElementById("history");
+let model = null;
+let streamStarted = false;
 
-  let stream = null;
-  let cameraFacing = "user";
-  let emotionModel = null;
-  let faceReady = false;
+// ---------------- PAGE NAVIGATION ----------------
+function showPage(id) {
+  pages.forEach(p => p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 
-  /* ---------- PAGE SWITCH ---------- */
-  function showPage(pageNumber) {
-    pages.forEach(p => p.classList.remove("active"));
-    const page = document.getElementById("page" + pageNumber);
-    if (page) page.classList.add("active");
+  if (id === "page-home") {
+    document.getElementById("welcomeText").innerText =
+      `Hello ${localStorage.getItem("username")} 👋`;
+  }
+}
+
+// ---------------- SAVE NAME ----------------
+function saveName() {
+  const name = document.getElementById("usernameInput").value.trim();
+  if (!name) {
+    alert("Please enter your name");
+    return;
+  }
+  localStorage.setItem("username", name);
+  showPage("page-home");
+}
+
+// ---------------- CAMERA ----------------
+async function startCamera() {
+  if (streamStarted) return;
+
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: "user" }
+  });
+
+  video.srcObject = stream;
+  streamStarted = true;
+}
+
+// ---------------- MODEL LOAD ----------------
+async function loadModel() {
+  model = await tf.loadLayersModel("./model/model.json");
+  console.log("Model loaded");
+}
+loadModel();
+
+// ---------------- PREPROCESS ----------------
+const canvas = document.createElement("canvas");
+canvas.width = 48;
+canvas.height = 48;
+const ctx = canvas.getContext("2d");
+
+function getInputTensor() {
+  ctx.drawImage(video, 0, 0, 48, 48);
+  return tf.browser.fromPixels(canvas)
+    .mean(2)
+    .toFloat()
+    .div(255)
+    .expandDims(0)
+    .expandDims(-1);
+}
+
+// ---------------- EMOTIONS ----------------
+const emotions = [
+  "Angry 😠",
+  "Disgust 🤢",
+  "Fear 😨",
+  "Happy 😊",
+  "Sad 😢",
+  "Surprise 😲",
+  "Neutral 😐"
+];
+
+// ---------------- ANALYZE ----------------
+async function analyzeEmotion() {
+  if (!model) {
+    alert("Model not loaded yet");
+    return;
   }
 
-  /* ---------- USER ---------- */
-  function saveName() {
-    const name = document.getElementById("username").value.trim();
-    if (!name) {
-      alert("Please enter your name");
-      return;
-    }
-    localStorage.setItem("username", name);
-    document.getElementById("userLabel").innerText = "Hello " + name;
+  if (!streamStarted) {
+    alert("Start the camera first");
+    return;
   }
 
-  /* ---------- CAMERA ---------- */
-  async function startCamera() {
-    if (stream) stream.getTracks().forEach(t => t.stop());
+  const tensor = getInputTensor();
+  const prediction = model.predict(tensor);
+  const data = await prediction.data();
 
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: cameraFacing }
-    });
+  const maxVal = Math.max(...data);
+  const index = data.indexOf(maxVal);
 
-    video.srcObject = stream;
+  if (maxVal < 0.4) {
+    resultText.innerText =
+      "No face detected clearly.\nImprove lighting or bring face closer.";
+    return;
   }
 
-  function switchCamera() {
-    cameraFacing = cameraFacing === "user" ? "environment" : "user";
-    startCamera();
-  }
-
-  /* ---------- MODELS ---------- */
-  async function loadModels() {
-    emotionModel = await tf.loadLayersModel("./model/model.json");
-    await faceapi.nets.tinyFaceDetector.loadFromUri("./models");
-    faceReady = true;
-  }
-  loadModels();
-
-  async function facePresent() {
-    if (!faceReady) return false;
-    const detection = await faceapi.detectSingleFace(
-      video,
-      new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.5 })
-    );
-    return detection !== undefined;
-  }
-
-  /* ---------- EMOTION ---------- */
-  async function analyzeEmotion() {
-    const hasFace = await facePresent();
-
-    if (!hasFace) {
-      result.innerText = "❌ No face detected";
-      confidence.innerText = "";
-      hint.innerText = "Improve lighting or move closer";
-      return;
-    }
-
-    const canvas = document.createElement("canvas");
-    canvas.width = 48;
-    canvas.height = 48;
-    canvas.getContext("2d").drawImage(video, 0, 0, 48, 48);
-
-    const img = tf.browser.fromPixels(canvas)
-      .mean(2)
-      .toFloat()
-      .div(255)
-      .expandDims(0)
-      .expandDims(-1);
-
-    const preds = await emotionModel.predict(img).data();
-    const emotions = ["Angry","Disgust","Fear","Happy","Sad","Surprise","Neutral"];
-
-    const index = preds.indexOf(Math.max(...preds));
-    const conf = (preds[index] * 100).toFixed(1);
-
-    result.innerText = "Emotion: " + emotions[index];
-    confidence.innerText = "Confidence: " + conf + "%";
-    hint.innerText = conf < 50 ? "Improve lighting or face position" : "";
-
-    saveHistory(emotions[index], conf);
-  }
-
-  /* ---------- HISTORY ---------- */
-  function saveHistory(e, c) {
-    const h = JSON.parse(localStorage.getItem("history") || "[]");
-    h.push(`${e} (${c}%)`);
-    localStorage.setItem("history", JSON.stringify(h));
-    loadHistory();
-  }
-
-  function loadHistory() {
-    historyList.innerHTML = "";
-    const h = JSON.parse(localStorage.getItem("history") || "[]");
-    h.forEach(item => {
-      const li = document.createElement("li");
-      li.textContent = item;
-      historyList.appendChild(li);
-    });
-  }
-
-  function clearHistory() {
-    localStorage.removeItem("history");
-    loadHistory();
-  }
-
-  /* ---------- DRAWER ---------- */
-  const drawer = document.getElementById("drawer");
-  const overlay = document.getElementById("overlay");
-
-  document.getElementById("menuBtn").onclick = () => {
-    drawer.classList.add("open");
-    overlay.classList.add("show");
-  };
-
-  document.getElementById("closeBtn").onclick =
-  overlay.onclick = () => {
-    drawer.classList.remove("open");
-    overlay.classList.remove("show");
-  };
-
-  /* ---------- EVENT BINDINGS ---------- */
-  document.getElementById("continueBtn").onclick = saveName;
-  document.getElementById("emotionPageBtn").onclick = () => showPage(2);
-  document.getElementById("infoPageBtn").onclick = () => showPage(3);
-  document.getElementById("backFromEmotion").onclick = () => showPage(1);
-  document.getElementById("backFromInfo").onclick = () => showPage(1);
-
-  document.getElementById("startCameraBtn").onclick = startCamera;
-  document.getElementById("switchCameraBtn").onclick = switchCamera;
-  document.getElementById("analyzeBtn").onclick = analyzeEmotion;
-  document.getElementById("clearHistoryBtn").onclick = clearHistory;
-
-  loadHistory();
-});
+  resultText.innerText =
+    `Emotion: ${emotions[index]}\nConfidence: ${(maxVal * 100).toFixed(1)}%`;
+}
