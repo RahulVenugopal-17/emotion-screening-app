@@ -1,97 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>EmoReg</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- TensorFlow -->
+  <!-- TensorFlow.js -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.16.0/dist/tf.min.js"></script>
 
   <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body onload="initApp()">
 
-<!-- TOP BAR -->
-<div class="top-bar">
-  <div class="app-title">EmoReg</div>
-  <button class="menu-btn" onclick="toggleMenu()">☰</button>
-</div>
+  <!-- Overlay -->
+  <div id="menuOverlay" class="menu-overlay" onclick="closeMenu()"></div>
 
-<!-- SIDE MENU -->
-<div id="sideMenu" class="side-menu">
-  <div class="menu-header" id="menuUser">Hello 👋</div>
-
-  <button class="menu-action" onclick="toggleTheme()">🌙 / ☀️ Theme</button>
-
-  <h4>Emotion History</h4>
-  <ul id="historyList"></ul>
-
-  <button class="menu-action danger" onclick="clearHistory()">🧹 Clear History</button>
-</div>
-
-<!-- PAGE 1 -->
-<div id="page1" class="page active">
-  <div class="card">
-    <h2>Welcome</h2>
-    <input id="nameInput" placeholder="Enter your name">
-
-    <div class="option" onclick="startApp()">🎭 Emotion Recognition</div>
-    <div class="option secondary" onclick="showPage(2)">📘 Information</div>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="app-title">EmoReg</div>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
   </div>
-</div>
 
-<!-- PAGE 2 -->
-<div id="page2" class="page">
-  <div class="card">
-    <h3>About the App</h3>
+  <!-- Side Menu -->
+  <div id="sideMenu" class="side-menu">
+    <button class="close-menu" onclick="closeMenu()">✕</button>
 
-    <p><b>Autism Spectrum Disorder:</b>  
-    A neurodevelopmental condition affecting communication and social interaction.</p>
+    <div class="menu-header" id="menuUser">Hello 👋</div>
 
-    <p><b>Social Communication Disorder:</b>  
-    Difficulty using language appropriately in social contexts.</p>
+    <button class="menu-btn" onclick="toggleTheme()">🌙 / ☀ Theme</button>
 
-    <p><b>ADHD:</b>  
-    Impacts attention, impulse control, and emotional regulation.</p>
+    <h3 class="menu-title">Emotion History</h3>
+    <ul id="historyList"></ul>
 
-    <p class="disclaimer">
-      ⚠️ This app is a screening support tool and not a medical diagnosis.
-    </p>
-
-    <button onclick="showPage(1)">⬅ Back</button>
+    <button class="menu-btn danger" onclick="clearHistory()">🧹 Clear History</button>
   </div>
-</div>
 
-<!-- PAGE 3 -->
-<div id="page3" class="page">
-  <div class="card">
-    <h3 id="greeting"></h3>
+  <!-- MAIN CONTENT -->
+  <div class="main">
 
-    <div class="button-row">
-      <button onclick="startCamera()">📸 Camera</button>
-      <button onclick="switchCamera()">🔄 Switch</button>
+    <h2 id="greeting">Welcome 👋</h2>
+
+    <input id="username" placeholder="Enter your name" />
+
+    <div class="card" onclick="goToEmotion()">
+      😊 Emotion Recognition
     </div>
 
-    <label class="upload-box">
-      🖼 Upload Image
-      <input type="file" accept="image/*" hidden onchange="loadImage(event)">
-    </label>
-
-    <video id="video" autoplay playsinline></video>
-    <img id="preview" />
-
-    <button class="analyze-btn" onclick="analyzeEmotion()">✨ Analyze Emotion</button>
-
-    <!-- RESULT SECTION -->
-    <div class="result-box">
-      <p id="result">Detected Emotion: —</p>
-      <p id="confidence" class="confidence-text"></p>
+    <div class="card info">
+      🧠 Autism, Social Communication Disorder, ADHD & Sensory Processing Disorder
     </div>
-  </div>
-</div>
 
-<script src="script.js"></script>
+    <!-- CAMERA SECTION -->
+    <div id="emotionSection" class="hidden">
+      <video id="video" autoplay playsinline></video>
+
+      <div class="controls">
+        <button class="primary" onclick="startCamera()">📷 Start Camera</button>
+        <button class="primary" onclick="analyzeEmotion()">✨ Analyze</button>
+      </div>
+
+      <p id="result"></p>
+      <p id="confidence"></p>
+      <p id="suggestion"></p>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
