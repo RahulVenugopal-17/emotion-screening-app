@@ -1,40 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>EmoReg</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- TensorFlow -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.16.0/dist/tf.min.js"></script>
-
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- SPLASH SCREEN -->
+<!-- SPLASH -->
 <section id="page-splash" class="page active splash">
-  <img src="logo.png" alt="EmoReg Logo" class="logo">
-  <h1>EmoReg</h1>
+  <h1 class="logoText">EmoReg</h1>
   <p class="tagline">Understand emotions. Improve awareness.</p>
   <button id="startApp">Get Started</button>
 </section>
 
-<!-- TOP BAR (hidden on splash via CSS) -->
+<!-- TOP BAR -->
 <header class="topbar">
   <button id="menuBtn" class="dotBtn">⋮</button>
   <span class="title">EmoReg</span>
 </header>
 
-<!-- SETTINGS / THREE DOT MENU -->
+<!-- SETTINGS -->
 <div id="menuPanel" class="menu hidden">
   <button id="closeMenu">✕ Close</button>
 
-  <h3>Settings & Insights</h3>
-
   <label class="toggle">
-    <input type="checkbox" id="darkToggle">
-    Dark Mode
+    <input type="checkbox" id="darkToggle"> Dark Mode
   </label>
 
   <button id="clearHistoryBtn" class="secondary">
@@ -47,28 +41,28 @@
   <h4>Emotion by Time</h4>
   <p id="timeSummary">–</p>
 
-  <h4>Emotion History</h4>
+  <h4>Recent History</h4>
   <ul id="historyList"></ul>
 </div>
 
-<!-- PAGE 1 : USER NAME -->
+<!-- ENTER NAME -->
 <section id="page-welcome" class="page">
   <h2>👋 Welcome</h2>
   <input id="usernameInput" placeholder="Enter your name">
   <button id="continueBtn">Continue</button>
 </section>
 
-<!-- PAGE 2 : HOME -->
+<!-- HOME -->
 <section id="page-home" class="page">
   <h2 id="greetText"></h2>
   <button id="goEmotion">😊 Emotion Recognition</button>
   <button id="goInfo">📘 Information</button>
 </section>
 
-<!-- PAGE 3 : EMOTION -->
+<!-- EMOTION -->
 <section id="page-emotion" class="page">
   <video id="video" autoplay playsinline></video>
-  <img id="preview" />
+  <img id="preview">
 
   <button id="startCamera">📷 Start Camera</button>
   <button id="switchCamera">🔄 Switch Camera</button>
@@ -87,20 +81,14 @@
   <button id="backHome" class="secondary">← Back</button>
 </section>
 
-<!-- PAGE 4 : INFO -->
+<!-- INFO -->
 <section id="page-info" class="page">
   <h2>📘 About EmoReg</h2>
 
-  <h3>Autism Spectrum Disorder</h3>
   <p>
-    Autism Spectrum Disorder is a neurodevelopmental condition that affects
-    emotional expression, communication, and social interaction.
-  </p>
-
-  <h3>How EmoReg Helps</h3>
-  <p>
-    EmoReg uses AI-based facial emotion recognition to help users and caregivers
-    better understand emotional patterns and triggers over time.
+    EmoReg is designed to help recognize facial emotions and improve emotional
+    awareness. This can be helpful for individuals with autism or social
+    communication challenges.
   </p>
 
   <button id="backFromInfo" class="secondary">← Back</button>
