@@ -16,7 +16,7 @@
   <span class="title">EmoReg</span>
 </header>
 
-<!-- THREE DOT MENU -->
+<!-- MENU -->
 <div id="menuPanel" class="menu hidden">
   <button id="closeMenu">✕ Close</button>
 
@@ -41,7 +41,7 @@
 <section id="page-welcome" class="page active">
   <h2>👋 Welcome</h2>
   <input id="usernameInput" placeholder="Enter your name">
-  <button id="continueBtn">Continue</button>
+  <button id="continueBtn">Get Started</button>
 </section>
 
 <!-- PAGE 2 -->
@@ -68,27 +68,29 @@
 
   <p id="emotionResult"></p>
   <p id="emotionHint"></p>
+  <p id="emotionInsight" class="insight"></p>
 
-  <button class="secondary" id="backHome">← Back</button>
+  <button id="clearHistoryBtn" class="secondary">🧹 Clear Emotion History</button>
+  <button id="backHome" class="secondary">← Back</button>
 </section>
 
 <!-- PAGE 4 -->
 <section id="page-info" class="page">
-  <h2>📘 About This App</h2>
+  <h2>📘 About EmoReg</h2>
 
   <h3>Autism Spectrum Disorder</h3>
   <p>
     Autism Spectrum Disorder is a neurodevelopmental condition that affects
-    communication, emotional expression, and social interaction.
+    emotional expression, communication, and social interaction.
   </p>
 
   <h3>How EmoReg Helps</h3>
   <p>
-    EmoReg uses AI-based facial emotion recognition to improve emotional
-    awareness and assist users and caregivers.
+    EmoReg uses AI-based facial emotion recognition to support emotional awareness
+    and assist users and caregivers in understanding emotional patterns.
   </p>
 
-  <button class="secondary" id="backFromInfo">← Back</button>
+  <button id="backFromInfo" class="secondary">← Back</button>
 </section>
 
 <script src="script.js"></script>
