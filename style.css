@@ -8,7 +8,6 @@ body {
   background: #0b132b;
   color: white;
   text-align: center;
-  transition: background 0.3s;
 }
 
 body.dark {
@@ -93,6 +92,7 @@ button.secondary {
   background: #374151;
 }
 
+/* UPLOAD */
 .uploadBig {
   display: block;
   padding: 18px;
@@ -112,4 +112,10 @@ video, img {
 
 img {
   display: none;
+}
+
+/* INSIGHT */
+.insight {
+  color: #a7f3d0;
+  font-size: 15px;
 }
