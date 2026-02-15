@@ -3,67 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <title>EmoReg</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- TensorFlow.js -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.16.0/dist/tf.min.js"></script>
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<!-- PAGE 1 : WELCOME -->
-<div id="page-welcome" class="page active">
-  <div class="card">
+  <!-- PAGE 1 -->
+  <section id="page1" class="page active">
     <h2>👋 Welcome</h2>
-    <input id="usernameInput" type="text" placeholder="Enter your name">
-    <button onclick="saveName()">Continue</button>
-  </div>
-</div>
+    <input id="username" placeholder="Enter your name" />
+    <button id="continueBtn">Continue</button>
+  </section>
 
-<!-- PAGE 2 : HOME -->
-<div id="page-home" class="page">
-  <div class="card">
-    <h2 id="welcomeText"></h2>
+  <!-- PAGE 2 -->
+  <section id="page2" class="page">
+    <button id="goEmotion">😊 Emotion Recognition</button>
+    <button id="goInfo">📘 Information</button>
+    <button id="backHome1">← Back</button>
+  </section>
 
-    <button onclick="showPage('page-emotion')">😊 Emotion Recognition</button>
-    <button onclick="showPage('page-info')">📘 Information</button>
-  </div>
-</div>
+  <!-- PAGE 3 -->
+  <section id="page3" class="page">
+    <h3 id="greet"></h3>
 
-<!-- PAGE 3 : EMOTION -->
-<div id="page-emotion" class="page">
-  <div class="card">
+    <button id="startCamera">📷 Start Camera</button>
+    <button id="switchCamera">🔁 Switch Camera</button>
+
+    <label class="uploadBtn">
+      📁 Upload Image
+      <input type="file" id="uploadImage" accept="image/*" hidden />
+    </label>
 
     <video id="video" autoplay playsinline></video>
+    <img id="preview" />
 
-    <button onclick="startCamera()">📸 Start Camera</button>
-    <button onclick="analyzeEmotion()">✨ Analyze Emotion</button>
+    <button id="analyzeEmotion">✨ Analyze Emotion</button>
 
-    <p id="emotionResult">Waiting for analysis...</p>
+    <p id="result"></p>
+    <p id="hint"></p>
 
-    <button class="secondary" onclick="showPage('page-home')">← Back</button>
-  </div>
-</div>
+    <button id="backHome2">← Back</button>
+  </section>
 
-<!-- PAGE 4 : INFO -->
-<div id="page-info" class="page">
-  <div class="card">
-    <h2>🧠 Information</h2>
+  <!-- PAGE 4 -->
+  <section id="page4" class="page">
+    <h2>Information</h2>
+    <p>Autism Spectrum Disorder, Social Communication Disorder, ADHD, Anxiety-related conditions.</p>
+    <button id="backHome3">← Back</button>
+  </section>
 
-    <p><b>Autism Spectrum Disorder (ASD)</b><br>
-    Affects communication, emotional expression, and social interaction.</p>
-
-    <p><b>Social Communication Disorder</b><br>
-    Difficulty using verbal and non-verbal communication in social contexts.</p>
-
-    <p><b>ADHD</b><br>
-    Impacts attention, impulsivity, and emotional regulation.</p>
-
-    <button class="secondary" onclick="showPage('page-home')">← Back</button>
-  </div>
-</div>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
