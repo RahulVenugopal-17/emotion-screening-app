@@ -14,6 +14,32 @@ body.dark {
   background: #000;
 }
 
+.page {
+  display: none;
+  padding: 20px;
+}
+
+.page.active {
+  display: block;
+}
+
+/* SPLASH */
+.splash {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.logoText {
+  font-size: 42px;
+  margin-bottom: 10px;
+}
+
+.tagline {
+  opacity: 0.8;
+}
+
 /* TOP BAR */
 .topbar {
   display: flex;
@@ -25,15 +51,13 @@ body.dark {
 
 .title {
   font-size: 18px;
-  font-weight: 600;
 }
 
 .dotBtn {
-  font-size: 22px;
   background: none;
   border: none;
   color: white;
-  cursor: pointer;
+  font-size: 22px;
 }
 
 /* MENU */
@@ -46,33 +70,17 @@ body.dark {
   background: #022c22;
   padding: 16px;
   z-index: 20;
-  overflow-y: auto;
 }
 
 .menu.hidden {
   display: none;
 }
 
-.menu h3, .menu h4 {
-  color: #5eead4;
-}
-
 .menu ul {
   text-align: left;
-  padding-left: 18px;
 }
 
-/* PAGES */
-.page {
-  display: none;
-  padding: 20px;
-}
-
-.page.active {
-  display: block;
-}
-
-/* INPUT & BUTTONS */
+/* INPUTS */
 input, button {
   width: 90%;
   max-width: 320px;
@@ -92,43 +100,23 @@ button.secondary {
   background: #374151;
 }
 
-/* UPLOAD */
-.uploadBig {
-  display: block;
-  padding: 18px;
-  background: #0f766e;
-  border-radius: 16px;
-  margin: 12px auto;
-  cursor: pointer;
-}
-
 /* MEDIA */
 video, img {
   width: 90%;
   max-width: 320px;
-  margin: 12px 0;
   border-radius: 14px;
 }
 
-img {
-  display: none;
+.uploadBig {
+  background: #0f766e;
+  padding: 18px;
+  border-radius: 16px;
+  display: block;
+  margin: 10px auto;
+  cursor: pointer;
 }
 
-/* INSIGHT */
 .insight {
-  color: #a7f3d0;
-  font-size: 15px;
-}
-/* SPLASH SCREEN */
-.splash {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-.logo {
-  width: 120px;
-  margin-bottom: 16px;
+  color: #5eead4;
+  font-style: italic;
 }
