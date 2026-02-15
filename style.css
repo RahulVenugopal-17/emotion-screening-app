@@ -1,38 +1,30 @@
-/* ---------- RESET & BASE ---------- */
 * {
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, Ubuntu, sans-serif;
+  font-family: system-ui, sans-serif;
 }
 
 body {
   margin: 0;
   background: #0b132b;
-  color: #ffffff;
-  text-align: center;
-  transition: background 0.3s, color 0.3s;
-}
-
-/* Dark mode */
-body.dark {
-  background: #000000;
-  color: #ffffff;
-}
-
-/* ---------- TOP BAR ---------- */
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  background: #0f766e;
   color: white;
+  text-align: center;
+  transition: background 0.3s;
 }
 
-.topbar .title {
+body.dark {
+  background: #000;
+}
+
+/* TOP BAR */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #0f766e;
+}
+
+.title {
   font-size: 18px;
   font-weight: 600;
 }
@@ -45,11 +37,11 @@ body.dark {
   cursor: pointer;
 }
 
-/* ---------- THREE DOT MENU ---------- */
+/* MENU */
 .menu {
   position: fixed;
   top: 0;
-  right: 0;
+  left: 0;
   width: 260px;
   height: 100%;
   background: #022c22;
@@ -62,42 +54,16 @@ body.dark {
   display: none;
 }
 
-.menu h3,
-.menu h4 {
-  margin: 12px 0 6px;
+.menu h3, .menu h4 {
   color: #5eead4;
 }
 
-.menu p,
-.menu li {
-  font-size: 14px;
-  text-align: left;
-}
-
 .menu ul {
-  padding-left: 16px;
+  text-align: left;
+  padding-left: 18px;
 }
 
-.menu button {
-  width: 100%;
-  margin: 8px 0;
-}
-
-#closeMenu {
-  background: #0f766e;
-  color: white;
-  border-radius: 10px;
-}
-
-/* ---------- TOGGLE ---------- */
-.toggle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 10px 0;
-}
-
-/* ---------- PAGES ---------- */
+/* PAGES */
 .page {
   display: none;
   padding: 20px;
@@ -107,100 +73,43 @@ body.dark {
   display: block;
 }
 
-/* ---------- HEADINGS ---------- */
-h2 {
-  margin-bottom: 16px;
-}
-
-h3 {
-  margin-top: 20px;
-  color: #5eead4;
-}
-
-/* ---------- INPUT ---------- */
-input {
+/* INPUT & BUTTONS */
+input, button {
   width: 90%;
   max-width: 320px;
   padding: 14px;
-  border-radius: 12px;
-  border: none;
-  font-size: 16px;
   margin: 10px 0;
-}
-
-/* ---------- BUTTONS ---------- */
-button {
-  width: 90%;
-  max-width: 320px;
-  padding: 14px;
   border-radius: 14px;
   border: none;
-  background: #0f766e;
-  color: white;
   font-size: 16px;
-  margin: 10px 0;
-  cursor: pointer;
-  transition: opacity 0.2s;
 }
 
-button:hover {
-  opacity: 0.9;
+button {
+  background: #0f766e;
+  color: white;
 }
 
 button.secondary {
   background: #374151;
 }
 
-/* ---------- UPLOAD BUTTON (BIG) ---------- */
 .uploadBig {
   display: block;
-  width: 90%;
-  max-width: 320px;
   padding: 18px;
-  margin: 12px auto;
   background: #0f766e;
   border-radius: 16px;
-  color: white;
-  font-size: 16px;
+  margin: 12px auto;
   cursor: pointer;
 }
 
-/* ---------- VIDEO & IMAGE ---------- */
-video,
-img {
+/* MEDIA */
+video, img {
   width: 90%;
   max-width: 320px;
-  margin: 15px 0;
+  margin: 12px 0;
   border-radius: 14px;
-  background: black;
 }
 
-/* Hide preview initially */
 img {
   display: none;
-}
-
-/* ---------- TEXT ---------- */
-p {
-  line-height: 1.6;
-  text-align: left;
-  margin: 8px 0;
-}
-
-/* Center specific texts */
-#emotionResult,
-#emotionHint,
-#greetText {
-  text-align: center;
-  margin-top: 10px;
-}
-
-/* ---------- SCROLLBAR (OPTIONAL CLEANUP) ---------- */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #0f766e;
-  border-radius: 6px;
 }
