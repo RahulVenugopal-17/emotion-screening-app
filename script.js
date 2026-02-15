@@ -1,4 +1,4 @@
-      document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
 
   /* ---------- PAGE CONTROL ---------- */
   const pages = document.querySelectorAll(".page");
@@ -8,10 +8,6 @@
   };
 
   /* ---------- USER ---------- */
-  const usernameInput = document.getElementById("usernameInput");
-  const continueBtn = document.getElementById("continueBtn");
-  const greetText = document.getElementById("greetText");
-
   continueBtn.onclick = () => {
     const name = usernameInput.value.trim();
     if (!name) return alert("Enter your name");
@@ -29,7 +25,6 @@
   menuBtn.onclick = () => menuPanel.classList.remove("hidden");
   closeMenu.onclick = () => menuPanel.classList.add("hidden");
 
-  /* ---------- DARK MODE ---------- */
   darkToggle.onchange = () =>
     document.body.classList.toggle("dark");
 
@@ -69,6 +64,16 @@
 
   const emotions = ["Angry","Disgust","Fear","Happy","Sad","Surprise","Neutral"];
 
+  const emotionInsights = {
+    Happy: ["Happiness often appears in comfortable environments."],
+    Sad: ["Sadness can indicate emotional fatigue."],
+    Fear: ["Fear is often caused by uncertainty or low lighting."],
+    Angry: ["Anger may result from frustration."],
+    Surprise: ["Surprise appears due to unexpected stimuli."],
+    Disgust: ["Disgust can be linked to sensory sensitivity."],
+    Neutral: ["Neutral expression does not mean lack of emotion."]
+  };
+
   const canvas = document.createElement("canvas");
   canvas.width = 48; canvas.height = 48;
   const ctx = canvas.getContext("2d");
@@ -94,23 +99,33 @@
     if (max < 0.4) {
       emotionResult.innerText = "No clear face detected";
       emotionHint.innerText = "Improve lighting or move closer";
+      emotionInsight.innerText = "";
       return;
     }
 
-    emotionResult.innerText = `Emotion: ${emotions[idx]}`;
+    const emotion = emotions[idx];
+    emotionResult.innerText = `Emotion: ${emotion}`;
     emotionHint.innerText = `Confidence: ${(max*100).toFixed(1)}%`;
+    emotionInsight.innerText = emotionInsights[emotion][0];
 
     const now = new Date();
-    history.push({ emotion: emotions[idx], hour: now.getHours(), date: now.toDateString() });
+    history.push({ emotion, hour: now.getHours(), date: now.toDateString() });
     localStorage.setItem("history", JSON.stringify(history));
+    updateMenu();
+  };
 
+  clearHistoryBtn.onclick = () => {
+    if (!confirm("Clear emotion history?")) return;
+    history = [];
+    localStorage.removeItem("history");
     updateMenu();
   };
 
   function updateMenu() {
     const count = {};
     history.forEach(h => count[h.emotion] = (count[h.emotion] || 0) + 1);
-    mostEmotion.innerText = Object.keys(count).sort((a,b)=>count[b]-count[a])[0] || "–";
+    mostEmotion.innerText =
+      Object.keys(count).sort((a,b)=>count[b]-count[a])[0] || "–";
 
     let m=0,a=0,e=0;
     history.forEach(h => h.hour<12?m++:h.hour<18?a++:e++);
