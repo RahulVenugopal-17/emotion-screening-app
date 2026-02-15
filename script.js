@@ -64,7 +64,48 @@ document.addEventListener("DOMContentLoaded", () => {
   let model;
   tf.loadLayersModel("./model/model.json").then(m => model = m);
 
-  const emotions = ["Angry","Disgust","Fear","Happy","Sad","Surprise","Neutral"];
+  const emotions = [
+    "Angry","Disgust","Fear","Happy","Sad","Surprise","Neutral"
+  ];
+
+  /* ✅ RANDOM MESSAGES PER EMOTION */
+  const emotionMessages = {
+    Happy: [
+      "Happiness grows when shared with others.",
+      "Joy often reflects comfort and safety.",
+      "Positive emotions support social connection."
+    ],
+    Sad: [
+      "Sadness can appear during emotional overload.",
+      "It’s okay to slow down and reflect.",
+      "Supportive environments help regulate sadness."
+    ],
+    Fear: [
+      "Fear may be caused by uncertainty or low lighting.",
+      "Calm surroundings help reduce fear.",
+      "Gradual exposure builds confidence."
+    ],
+    Angry: [
+      "Anger often comes from frustration.",
+      "Structured routines help emotional control.",
+      "Clear communication reduces anger."
+    ],
+    Surprise: [
+      "Surprise is triggered by sudden changes.",
+      "Predictability improves emotional comfort.",
+      "Unexpected stimuli affect reactions."
+    ],
+    Disgust: [
+      "Disgust may relate to sensory sensitivity.",
+      "Gradual exposure improves tolerance.",
+      "Sensory awareness is important."
+    ],
+    Neutral: [
+      "Neutral does not mean lack of emotion.",
+      "Calm states support focus and learning.",
+      "Emotional expression varies across people."
+    ]
+  };
 
   const canvas = document.createElement("canvas");
   canvas.width = 48;
@@ -73,6 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let history = JSON.parse(localStorage.getItem("history") || "[]");
 
+  /* ---------- ANALYZE ---------- */
   analyzeEmotion.onclick = async () => {
     if (!model) return alert("Model loading");
 
@@ -85,8 +127,11 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.drawImage(src, 0, 0, 48, 48);
 
     const t = tf.browser.fromPixels(canvas)
-      .mean(2).toFloat().div(255)
-      .expandDims(0).expandDims(-1);
+      .mean(2)
+      .toFloat()
+      .div(255)
+      .expandDims(0)
+      .expandDims(-1);
 
     const d = await model.predict(t).data();
     const max = Math.max(...d);
@@ -98,21 +143,28 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    emotionResult.innerText = `Emotion: ${emotions[idx]}`;
-    emotionHint.innerText = `Confidence: ${(max * 100).toFixed(1)}%`;
+    const emotion = emotions[idx];
+    const confidence = (max * 100).toFixed(1);
+
+    const msgs = emotionMessages[emotion];
+    const randomMsg = msgs[Math.floor(Math.random() * msgs.length)];
+
+    emotionResult.innerText = `Emotion: ${emotion}`;
+    emotionHint.innerText =
+      `Confidence: ${confidence}%\n"${randomMsg}"`;
 
     const now = new Date();
     history.push({
-      emotion: emotions[idx],
+      emotion,
       hour: now.getHours(),
       date: now.toDateString()
     });
-
     localStorage.setItem("history", JSON.stringify(history));
+
     updateMenu();
   };
 
-  /* ✅ CLEAR HISTORY (MENU ONLY) */
+  /* ---------- CLEAR HISTORY ---------- */
   clearHistoryBtn.onclick = () => {
     if (!confirm("Clear emotion history?")) return;
     history = [];
@@ -128,11 +180,11 @@ document.addEventListener("DOMContentLoaded", () => {
       Object.keys(count).sort((a,b)=>count[b]-count[a])[0] || "–";
 
     let m=0,a=0,e=0;
-    history.forEach(h => h.hour < 12 ? m++ : h.hour < 18 ? a++ : e++);
+    history.forEach(h => h.hour<12?m++:h.hour<18?a++:e++);
     timeSummary.innerText = `Morning:${m}, Afternoon:${a}, Evening:${e}`;
 
     historyList.innerHTML = history.slice(-10).reverse()
-      .map(h => `<li>${h.emotion} – ${h.date}</li>`).join("");
+      .map(h=>`<li>${h.emotion} – ${h.date}</li>`).join("");
   }
 
   updateMenu();
