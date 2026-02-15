@@ -5,7 +5,9 @@
   <title>EmoReg</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- TensorFlow -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.16.0/dist/tf.min.js"></script>
+
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -14,16 +16,17 @@
 <section id="page-splash" class="page active splash">
   <img src="logo.png" alt="EmoReg Logo" class="logo">
   <h1>EmoReg</h1>
+  <p class="tagline">Understand emotions. Improve awareness.</p>
   <button id="startApp">Get Started</button>
 </section>
 
-<!-- TOP BAR -->
+<!-- TOP BAR (hidden on splash via CSS) -->
 <header class="topbar">
   <button id="menuBtn" class="dotBtn">⋮</button>
   <span class="title">EmoReg</span>
 </header>
 
-<!-- MENU -->
+<!-- SETTINGS / THREE DOT MENU -->
 <div id="menuPanel" class="menu hidden">
   <button id="closeMenu">✕ Close</button>
 
@@ -48,21 +51,21 @@
   <ul id="historyList"></ul>
 </div>
 
-<!-- PAGE 1 -->
+<!-- PAGE 1 : USER NAME -->
 <section id="page-welcome" class="page">
   <h2>👋 Welcome</h2>
   <input id="usernameInput" placeholder="Enter your name">
   <button id="continueBtn">Continue</button>
 </section>
 
-<!-- PAGE 2 -->
+<!-- PAGE 2 : HOME -->
 <section id="page-home" class="page">
   <h2 id="greetText"></h2>
   <button id="goEmotion">😊 Emotion Recognition</button>
   <button id="goInfo">📘 Information</button>
 </section>
 
-<!-- PAGE 3 -->
+<!-- PAGE 3 : EMOTION -->
 <section id="page-emotion" class="page">
   <video id="video" autoplay playsinline></video>
   <img id="preview" />
@@ -84,20 +87,20 @@
   <button id="backHome" class="secondary">← Back</button>
 </section>
 
-<!-- PAGE 4 -->
+<!-- PAGE 4 : INFO -->
 <section id="page-info" class="page">
   <h2>📘 About EmoReg</h2>
 
   <h3>Autism Spectrum Disorder</h3>
   <p>
-    Autism Spectrum Disorder affects emotional expression,
-    communication, and social interaction.
+    Autism Spectrum Disorder is a neurodevelopmental condition that affects
+    emotional expression, communication, and social interaction.
   </p>
 
   <h3>How EmoReg Helps</h3>
   <p>
-    EmoReg uses AI-based facial emotion recognition to support
-    emotional awareness and pattern tracking.
+    EmoReg uses AI-based facial emotion recognition to help users and caregivers
+    better understand emotional patterns and triggers over time.
   </p>
 
   <button id="backFromInfo" class="secondary">← Back</button>
