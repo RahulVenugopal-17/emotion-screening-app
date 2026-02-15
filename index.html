@@ -10,6 +10,13 @@
 </head>
 <body>
 
+<!-- SPLASH SCREEN -->
+<section id="page-splash" class="page active splash">
+  <img src="logo.png" alt="EmoReg Logo" class="logo">
+  <h1>EmoReg</h1>
+  <button id="startApp">Get Started</button>
+</section>
+
 <!-- TOP BAR -->
 <header class="topbar">
   <button id="menuBtn" class="dotBtn">⋮</button>
@@ -27,6 +34,10 @@
     Dark Mode
   </label>
 
+  <button id="clearHistoryBtn" class="secondary">
+    🧹 Clear Emotion History
+  </button>
+
   <h4>Most Frequent Emotion</h4>
   <p id="mostEmotion">–</p>
 
@@ -38,10 +49,10 @@
 </div>
 
 <!-- PAGE 1 -->
-<section id="page-welcome" class="page active">
+<section id="page-welcome" class="page">
   <h2>👋 Welcome</h2>
   <input id="usernameInput" placeholder="Enter your name">
-  <button id="continueBtn">Get Started</button>
+  <button id="continueBtn">Continue</button>
 </section>
 
 <!-- PAGE 2 -->
@@ -70,7 +81,6 @@
   <p id="emotionHint"></p>
   <p id="emotionInsight" class="insight"></p>
 
-  <button id="clearHistoryBtn" class="secondary">🧹 Clear Emotion History</button>
   <button id="backHome" class="secondary">← Back</button>
 </section>
 
@@ -80,14 +90,14 @@
 
   <h3>Autism Spectrum Disorder</h3>
   <p>
-    Autism Spectrum Disorder is a neurodevelopmental condition that affects
-    emotional expression, communication, and social interaction.
+    Autism Spectrum Disorder affects emotional expression,
+    communication, and social interaction.
   </p>
 
   <h3>How EmoReg Helps</h3>
   <p>
-    EmoReg uses AI-based facial emotion recognition to support emotional awareness
-    and assist users and caregivers in understanding emotional patterns.
+    EmoReg uses AI-based facial emotion recognition to support
+    emotional awareness and pattern tracking.
   </p>
 
   <button id="backFromInfo" class="secondary">← Back</button>
