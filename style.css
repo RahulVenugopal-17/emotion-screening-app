@@ -119,3 +119,16 @@ img {
   color: #a7f3d0;
   font-size: 15px;
 }
+/* SPLASH SCREEN */
+.splash {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.logo {
+  width: 120px;
+  margin-bottom: 16px;
+}
