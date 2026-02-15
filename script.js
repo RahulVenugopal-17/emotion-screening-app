@@ -7,6 +7,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById(id).classList.add("active");
   };
 
+  /* ---------- SPLASH ---------- */
+  startApp.onclick = () => showPage("page-welcome");
+
   /* ---------- USER ---------- */
   continueBtn.onclick = () => {
     const name = usernameInput.value.trim();
@@ -66,11 +69,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const emotionInsights = {
     Happy: ["Happiness often appears in comfortable environments."],
-    Sad: ["Sadness can indicate emotional fatigue."],
+    Sad: ["Sadness may indicate emotional fatigue."],
     Fear: ["Fear is often caused by uncertainty or low lighting."],
-    Angry: ["Anger may result from frustration."],
-    Surprise: ["Surprise appears due to unexpected stimuli."],
-    Disgust: ["Disgust can be linked to sensory sensitivity."],
+    Angry: ["Anger can result from frustration."],
+    Surprise: ["Surprise is triggered by unexpected stimuli."],
+    Disgust: ["Disgust may relate to sensory sensitivity."],
     Neutral: ["Neutral expression does not mean lack of emotion."]
   };
 
